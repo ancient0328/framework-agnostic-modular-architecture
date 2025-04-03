@@ -15,6 +15,7 @@ Containerized Modular Monolith Architecture Template Creation Tool
 - **Modular Structure**: Module design separated by functionality
 - **Containerization**: Consistent development and production environments with Docker
 - **Easy Initial Setup**: Interactive configuration process
+- **Project Documentation**: Integrated project record management for architecture decisions and implementation details
 
 ## Installation
 
@@ -73,6 +74,35 @@ A flexible template supporting various package managers and frontend frameworks.
 - Support for multiple package managers (npm, yarn, pnpm)
 - Support for various frontend frameworks
 - Customizable configuration
+
+## Development Tools
+
+The template includes several development tools to enhance productivity and maintainability:
+
+### Asset Synchronization
+
+A system that automatically copies shared assets to each module's appropriate directory, ensuring consistency while maintaining module independence.
+
+```bash
+# Sync all assets
+node scripts/sync-assets.js
+```
+
+### Project Record Management
+
+The template integrates with Project Record Manager (PRM) to document architecture decisions and implementation details in a consistent format.
+
+```bash
+# Set up Project Record Manager
+node scripts/setup-prm.js
+
+# Create a new record
+npm run prm:create
+```
+
+This helps maintain comprehensive documentation of your project's development history, which is especially valuable in a modular architecture.
+
+For detailed documentation, see [Project Record Manager for CMM](../documents/tools/project-record-manager_en.md).
 
 ## Project Structure
 

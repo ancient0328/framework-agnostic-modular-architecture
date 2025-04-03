@@ -22,6 +22,7 @@ This repository includes the following components:
 - **Single Repository**: Integrated code management with monorepo
 - **Independent Deployment**: Ability to deploy modules individually
 - **Flexibility**: Support for various package managers and frontend frameworks
+- **Project Documentation**: Integrated project record management for architecture decisions and implementation details
 
 ## Usage
 
@@ -81,6 +82,52 @@ A flexible template supporting various package managers and frontend frameworks.
 - Support for multiple package managers (npm, yarn, pnpm)
 - Support for various frontend frameworks
 - Customizable configuration
+
+## Development Tools
+
+### Asset Synchronization
+
+This template includes an asset synchronization system that automatically copies shared assets to each module's appropriate directory. This ensures consistency while maintaining the independence of each module.
+
+```bash
+# Sync all assets
+node scripts/sync-assets.js
+
+# Sync assets for specific modules
+node scripts/sync-assets.js --modules=module-a,module-b
+
+# Dry run (no actual changes)
+node scripts/sync-assets.js --dry-run
+```
+
+### Project Record Management
+
+The template integrates with Project Record Manager (PRM) to help document architecture decisions and implementation details in a consistent format.
+
+#### Setup
+
+```bash
+# Set up Project Record Manager
+node scripts/setup-prm.js
+```
+
+#### Usage
+
+```bash
+# Create a new record
+npm run prm:create
+# or with yarn
+yarn prm:create
+# or with pnpm
+pnpm prm:create
+
+# Configure settings
+npm run prm:config
+```
+
+This tool helps maintain comprehensive documentation of your project's development history, which is especially valuable in a modular architecture where design decisions should be well-documented.
+
+For detailed documentation, see [Project Record Manager for CMM](./documents/tools/project-record-manager_en.md).
 
 ## Architecture
 
