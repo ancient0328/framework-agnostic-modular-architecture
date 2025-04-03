@@ -1,5 +1,10 @@
 # Contributing to Containerized Modular Monolith
 
+## Language
+
+- [English (this document)](./CONTRIBUTING.md)
+- [日本語](./documents/root/CONTRIBUTING_ja.md)
+
 Thank you for your interest in contributing to the Containerized Modular Monolith project! This document provides guidelines and instructions for contributing.
 
 ## Code of Conduct

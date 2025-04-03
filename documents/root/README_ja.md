@@ -1,6 +1,9 @@
 # コンテナ化モジュラーモノリスアーキテクチャ
 
-[English](./README.md)
+## 言語
+
+- [English](../../README.md)
+- [日本語（このドキュメント）](./README_ja.md)
 
 ## 概要
 
@@ -133,10 +136,10 @@ npm run prm:config
 
 ## ドキュメントへのリンク
 
-- [アーキテクチャ概要](./documents/architecture/overview.md)
-- [テンプレート比較](./documents/architecture/cmm-template-comparison.md)
-- [プロジェクト記録管理](./documents/tools/project-record-manager.md)
-- [コントリビューションガイドライン](./CONTRIBUTING.md)
+- [アーキテクチャ概要](../../documents/architecture/overview.md)
+- [テンプレート比較](../../documents/architecture/cmm-template-comparison.md)
+- [プロジェクト記録管理](../../documents/tools/project-record-manager.md)
+- [コントリビューションガイドライン](./CONTRIBUTING_ja.md)
 
 ## アーキテクチャ
 

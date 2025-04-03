@@ -1,6 +1,9 @@
 # Containerized Modular Monolith Architecture
 
-[日本語](./README_ja.md)
+## Language
+
+- [English (this document)](./README.md)
+- [日本語](./documents/root/README_ja.md)
 
 ## Overview
 
