@@ -144,7 +144,7 @@ Detailed architecture documentation is available in the `docs/` directory of eac
 ## Documentation
 
 - [Architecture Overview](./documents/architecture/overview.md)
-- [Template Comparison](./cmm-template-comparison_en.md)
+- [Template Comparison](./documents/architecture/cmm-template-comparison_en.md)
 - [Project Record Manager](./documents/tools/project-record-manager_en.md)
 - [Contributing Guidelines](./CONTRIBUTING.md)
 

@@ -68,4 +68,4 @@
 
 Project Record Manager (PRM) を使用して、アーキテクチャの決定や実装の詳細を一貫したフォーマットで文書化。
 
-詳細は[CMM向けProject Record Manager](./documents/tools/project-record-manager.md)を参照してください。
+詳細は[CMM向けProject Record Manager](../tools/project-record-manager.md)を参照してください。

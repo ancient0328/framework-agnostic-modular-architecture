@@ -134,7 +134,7 @@ npm run prm:config
 ## ドキュメントへのリンク
 
 - [アーキテクチャ概要](./documents/architecture/overview.md)
-- [テンプレート比較](./cmm-template-comparison.md)
+- [テンプレート比較](./documents/architecture/cmm-template-comparison.md)
 - [プロジェクト記録管理](./documents/tools/project-record-manager.md)
 - [コントリビューションガイドライン](./CONTRIBUTING.md)
 

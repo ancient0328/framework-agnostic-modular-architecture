@@ -68,4 +68,4 @@ A system that automatically copies shared assets to each module's appropriate di
 
 Uses Project Record Manager (PRM) to document architecture decisions and implementation details in a consistent format.
 
-For detailed documentation, see [Project Record Manager for CMM](./documents/tools/project-record-manager_en.md).
+For detailed documentation, see [Project Record Manager for CMM](../tools/project-record-manager_en.md).
