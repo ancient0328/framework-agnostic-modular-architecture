@@ -143,11 +143,10 @@ Detailed architecture documentation is available in the `docs/` directory of eac
 
 ## Documentation
 
-Each template includes detailed documentation:
-
-- [pnpm-turbo Template Documentation](./cmm-template-pnpm-turbo/docs/README_EN.md)
-- [flexible Template Documentation](./cmm-template-flexible/docs/README_EN.md)
-- [Template Comparison](./cmm-template-comparison.md)
+- [Architecture Overview](./documents/architecture/overview.md)
+- [Template Comparison](./cmm-template-comparison_en.md)
+- [Project Record Manager](./documents/tools/project-record-manager_en.md)
+- [Contributing Guidelines](./CONTRIBUTING.md)
 
 ## Contributing
 

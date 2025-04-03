@@ -131,6 +131,13 @@ npm run prm:config
 
 詳細なドキュメントは[CMM向けProject Record Manager](./documents/tools/project-record-manager.md)を参照してください。
 
+## ドキュメントへのリンク
+
+- [アーキテクチャ概要](./documents/architecture/overview.md)
+- [テンプレート比較](./cmm-template-comparison.md)
+- [プロジェクト記録管理](./documents/tools/project-record-manager.md)
+- [コントリビューションガイドライン](./CONTRIBUTING.md)
+
 ## アーキテクチャ
 
 コンテナ化モジュラーモノリスアーキテクチャは、以下の設計原則に基づいています：
@@ -142,14 +149,6 @@ npm run prm:config
 5. **段階的なスケーリング**: トラフィックや開発チームの規模に応じて、モジュールを個別にスケールアウトできます。
 
 詳細なアーキテクチャドキュメントは各テンプレートの `docs/` ディレクトリにあります。
-
-## ドキュメント
-
-各テンプレートには詳細なドキュメントが含まれています：
-
-- [pnpm-turboテンプレートのドキュメント](./cmm-template-pnpm-turbo/docs/README.md)
-- [flexibleテンプレートのドキュメント](./cmm-template-flexible/docs/README.md)
-- [テンプレート比較](./cmm-template-comparison.md)
 
 ## 貢献
 
