@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * プロジェクト初期化スクリプト
- * pnpmとTurborepoを使用したコンテナ化モジュラーモノリスプロジェクトを初期化します
+ * Project Initialization Script
+ * Initializes a containerized modular monolith project using pnpm and Turborepo
  */
 
 const fs = require('fs');
@@ -15,16 +15,16 @@ const rl = readline.createInterface({
   output: process.stdout
 });
 
-// プロジェクトのルートディレクトリ
+// Project root directory
 const rootDir = path.join(__dirname, '..');
 
-// プロジェクト設定を保存するファイル
+// Project configuration file
 const projectConfigFile = path.join(rootDir, '.project-config.json');
 
-// デフォルト設定
+// Default configuration
 const defaultConfig = {
   name: 'my-modular-monolith',
-  description: 'コンテナ化モジュラーモノリスプロジェクト',
+  description: 'Containerized Modular Monolith Project',
   version: '0.1.0',
   author: '',
   modules: ['module-a', 'module-b'],
@@ -35,10 +35,10 @@ const defaultConfig = {
 };
 
 /**
- * 質問を表示して回答を取得する
- * @param {string} question - 質問文
- * @param {string} defaultValue - デフォルト値
- * @returns {Promise<string>} - ユーザーの回答
+ * Display a question and get the answer
+ * @param {string} question - Question text
+ * @param {string} defaultValue - Default value
+ * @returns {Promise<string>} - User's answer
  */
 function askQuestion(question, defaultValue = '') {
   const defaultText = defaultValue ? ` (${defaultValue})` : '';
@@ -50,24 +50,24 @@ function askQuestion(question, defaultValue = '') {
 }
 
 /**
- * 複数選択肢から選択する
- * @param {string} question - 質問文
- * @param {string[]} choices - 選択肢
- * @param {string[]} defaults - デフォルト選択
- * @returns {Promise<string[]>} - 選択された項目
+ * Select from multiple choices
+ * @param {string} question - Question text
+ * @param {string[]} choices - Choices
+ * @param {string[]} defaults - Default selections
+ * @returns {Promise<string[]>} - Selected items
  */
 async function askMultipleChoice(question, choices, defaults = []) {
-  console.log(`${question} (カンマ区切りで複数選択可、空白で${defaults.join(', ')})`);
+  console.log(`${question} (comma-separated for multiple, empty for ${defaults.join(', ')})`);
   choices.forEach((choice, index) => {
     const isDefault = defaults.includes(choice);
-    console.log(`${index + 1}. ${choice}${isDefault ? ' (デフォルト)' : ''}`);
+    console.log(`${index + 1}. ${choice}${isDefault ? ' (default)' : ''}`);
   });
   
-  const answer = await askQuestion('選択してください（番号またはカンマ区切りの名前）');
+  const answer = await askQuestion('Select (numbers or comma-separated names)');
   
   if (!answer) return defaults;
   
-  // 番号で選択された場合
+  // If selected by numbers
   if (/^[0-9,]+$/.test(answer)) {
     return answer.split(',')
       .map(num => parseInt(num.trim(), 10))
@@ -75,17 +75,17 @@ async function askMultipleChoice(question, choices, defaults = []) {
       .map(num => choices[num - 1]);
   }
   
-  // 名前で選択された場合
+  // If selected by names
   return answer.split(',')
     .map(name => name.trim())
     .filter(name => choices.includes(name));
 }
 
 /**
- * はい/いいえの質問
- * @param {string} question - 質問文
- * @param {boolean} defaultValue - デフォルト値
- * @returns {Promise<boolean>} - ユーザーの回答
+ * Yes/No question
+ * @param {string} question - Question text
+ * @param {boolean} defaultValue - Default value
+ * @returns {Promise<boolean>} - User's answer
  */
 async function askYesNo(question, defaultValue = true) {
   const defaultText = defaultValue ? 'Y/n' : 'y/N';
@@ -97,8 +97,8 @@ async function askYesNo(question, defaultValue = true) {
 }
 
 /**
- * package.jsonファイルを更新する
- * @param {Object} config - プロジェクト設定
+ * Update package.json file
+ * @param {Object} config - Project configuration
  */
 function updatePackageJson(config) {
   const packageJsonPath = path.join(rootDir, 'package.json');
@@ -110,40 +110,40 @@ function updatePackageJson(config) {
   packageJson.author = config.author;
   
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
-  console.log('✅ package.jsonを更新しました');
+  console.log('Updated package.json');
 }
 
 /**
- * READMEファイルを更新する
- * @param {Object} config - プロジェクト設定
+ * Update README file
+ * @param {Object} config - Project configuration
  */
 function updateReadme(config) {
   const readmePath = path.join(rootDir, 'README.md');
   let readmeContent = fs.readFileSync(readmePath, 'utf8');
   
-  // タイトルと説明を更新
+  // Update title and description
   readmeContent = readmeContent.replace(
     /# .*?\n/,
     `# ${config.name}\n`
   );
   
   readmeContent = readmeContent.replace(
-    /このリポジトリは.*?です。/,
+    /This repository is.*?\./,
     `${config.description}`
   );
   
   fs.writeFileSync(readmePath, readmeContent);
-  console.log('✅ README.mdを更新しました');
+  console.log('Updated README.md');
 }
 
 /**
- * モジュールを追加する
- * @param {string[]} modules - 追加するモジュール名の配列
+ * Add modules
+ * @param {string[]} modules - Array of module names to add
  */
 function setupModules(modules) {
   const templateDir = path.join(rootDir, 'modules', '_template_');
   
-  // 既存のモジュールを削除（_template_以外）
+  // Remove existing modules (except _template_)
   const modulesDir = path.join(rootDir, 'modules');
   fs.readdirSync(modulesDir).forEach(file => {
     const filePath = path.join(modulesDir, file);
@@ -151,55 +151,55 @@ function setupModules(modules) {
       try {
         execSync(`rm -rf ${filePath}`);
       } catch (error) {
-        console.error(`❌ モジュール ${file} の削除に失敗しました:`, error);
+        console.error(`Failed to remove module ${file}:`, error);
       }
     }
   });
   
-  // 新しいモジュールを追加
+  // Add new modules
   modules.forEach(module => {
     const moduleDir = path.join(rootDir, 'modules', module);
     
     try {
       execSync(`cp -r ${templateDir} ${moduleDir}`);
       
-      // package.jsonを更新
+      // Update package.json
       const packageJsonPath = path.join(moduleDir, 'package.json');
       if (fs.existsSync(packageJsonPath)) {
         const packageJson = require(packageJsonPath);
         packageJson.name = `@${defaultConfig.name}/${module}`;
-        packageJson.description = `${module}モジュール`;
+        packageJson.description = `${module} module`;
         fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
       }
       
-      console.log(`✅ モジュール ${module} を作成しました`);
+      console.log(`Created module ${module}`);
     } catch (error) {
-      console.error(`❌ モジュール ${module} の作成に失敗しました:`, error);
+      console.error(`Failed to create module ${module}:`, error);
     }
   });
 }
 
 /**
- * フロントエンドを設定する
- * @param {string[]} frontends - 設定するフロントエンド
+ * Configure frontends
+ * @param {string[]} frontends - Frontends to configure
  */
 function setupFrontends(frontends) {
   const frontendTypes = {
-    web: 'Webフロントエンド',
-    mobile: 'モバイルフロントエンド'
+    web: 'Web Frontend',
+    mobile: 'Mobile Frontend'
   };
   
-  // 既存のフロントエンドを確認
+  // Check existing frontends
   const frontendDir = path.join(rootDir, 'frontend');
   Object.keys(frontendTypes).forEach(type => {
     const typeDir = path.join(frontendDir, type);
     const include = frontends.includes(type);
     
     if (include && !fs.existsSync(typeDir)) {
-      // ディレクトリが存在しない場合は作成
+      // Create directory if it doesn't exist
       fs.mkdirSync(typeDir, { recursive: true });
       
-      // package.jsonを作成
+      // Create package.json
       const packageJson = {
         name: `@${defaultConfig.name}/${type}-frontend`,
         version: '0.1.0',
@@ -220,42 +220,42 @@ function setupFrontends(frontends) {
         JSON.stringify(packageJson, null, 2)
       );
       
-      console.log(`✅ ${frontendTypes[type]}を作成しました`);
+      console.log(`Created ${frontendTypes[type]}`);
     } else if (!include && fs.existsSync(typeDir)) {
-      // 不要なフロントエンドを削除
+      // Remove unnecessary frontends
       try {
         execSync(`rm -rf ${typeDir}`);
-        console.log(`✅ ${frontendTypes[type]}を削除しました`);
+        console.log(`Removed ${frontendTypes[type]}`);
       } catch (error) {
-        console.error(`❌ ${frontendTypes[type]}の削除に失敗しました:`, error);
+        console.error(`Failed to remove ${frontendTypes[type]}:`, error);
       }
     }
   });
 }
 
 /**
- * docker-compose.ymlを更新する
- * @param {Object} config - プロジェクト設定
+ * Update docker-compose.yml
+ * @param {Object} config - Project configuration
  */
 function updateDockerCompose(config) {
   const dockerComposePath = path.join(rootDir, 'docker-compose.yml');
   let dockerComposeContent = fs.readFileSync(dockerComposePath, 'utf8');
   
-  // データベース設定
+  // Database configuration
   if (config.database !== 'postgres') {
-    // PostgreSQL以外のデータベースを使用する場合の処理
-    // 現在はPostgreSQLのみサポート
+    // Process for using databases other than PostgreSQL
+    // Currently only PostgreSQL is supported
   }
   
-  // キャッシュ設定
+  // Cache configuration
   if (config.cache !== 'redis') {
-    // Redis以外のキャッシュを使用する場合の処理
-    // 現在はRedisのみサポート
+    // Process for using caches other than Redis
+    // Currently only Redis is supported
   }
   
-  // モニタリング設定
+  // Monitoring configuration
   if (!config.monitoring) {
-    // モニタリングを無効にする場合
+    // When disabling monitoring
     dockerComposeContent = dockerComposeContent
       .replace(/\s+# Prometheus.*?app-network\n/s, '\n')
       .replace(/\s+# Grafana.*?app-network\n/s, '\n')
@@ -264,98 +264,98 @@ function updateDockerCompose(config) {
   }
   
   fs.writeFileSync(dockerComposePath, dockerComposeContent);
-  console.log('✅ docker-compose.ymlを更新しました');
+  console.log('Updated docker-compose.yml');
 }
 
 /**
- * プロジェクト設定を保存する
- * @param {Object} config - プロジェクト設定
+ * Save project configuration
+ * @param {Object} config - Project configuration
  */
 function saveProjectConfig(config) {
   fs.writeFileSync(projectConfigFile, JSON.stringify(config, null, 2));
-  console.log('✅ プロジェクト設定を保存しました');
+  console.log('Saved project configuration');
 }
 
 /**
- * プロジェクトを初期化する
+ * Initialize project
  */
 async function initProject() {
-  console.log('🚀 コンテナ化モジュラーモノリスプロジェクトの初期化を開始します');
+  console.log('Starting containerized modular monolith project initialization');
   
-  // 既存の設定を読み込む
+  // Load existing configuration
   let config = {};
   if (fs.existsSync(projectConfigFile)) {
     try {
       config = JSON.parse(fs.readFileSync(projectConfigFile, 'utf8'));
-      console.log('ℹ️ 既存のプロジェクト設定を読み込みました');
+      console.log('Loaded existing project configuration');
     } catch (error) {
-      console.error('⚠️ 既存の設定の読み込みに失敗しました。デフォルト設定を使用します。');
+      console.error('Failed to load existing configuration. Using default settings.');
       config = { ...defaultConfig };
     }
   } else {
     config = { ...defaultConfig };
   }
   
-  // プロジェクト情報の入力
-  config.name = await askQuestion('プロジェクト名', config.name);
-  config.description = await askQuestion('プロジェクトの説明', config.description);
-  config.version = await askQuestion('バージョン', config.version);
-  config.author = await askQuestion('作者', config.author);
+  // Input project information
+  config.name = await askQuestion('Project name', config.name);
+  config.description = await askQuestion('Project description', config.description);
+  config.version = await askQuestion('Version', config.version);
+  config.author = await askQuestion('Author', config.author);
   
-  // モジュール設定
+  // Module configuration
   const defaultModules = config.modules || defaultConfig.modules;
   config.modules = await askMultipleChoice(
-    'プロジェクトに含めるモジュールを選択してください',
+    'Select modules to include in the project',
     ['module-a', 'module-b', 'module-c', 'module-d'],
     defaultModules
   );
   
-  // フロントエンド設定
+  // Frontend configuration
   const defaultFrontends = config.frontends || defaultConfig.frontends;
   config.frontends = await askMultipleChoice(
-    'プロジェクトに含めるフロントエンドを選択してください',
+    'Select frontends to include in the project',
     ['web', 'mobile'],
     defaultFrontends
   );
   
-  // データベース設定
+  // Database configuration
   config.database = await askQuestion(
-    'データベースを選択してください (postgres)',
+    'Select database (postgres)',
     config.database || defaultConfig.database
   );
   
-  // キャッシュ設定
+  // Cache configuration
   config.cache = await askQuestion(
-    'キャッシュを選択してください (redis)',
+    'Select cache (redis)',
     config.cache || defaultConfig.cache
   );
   
-  // モニタリング設定
+  // Monitoring configuration
   config.monitoring = await askYesNo(
-    'モニタリング（Prometheus/Grafana）を有効にしますか？',
+    'Enable monitoring (Prometheus/Grafana)?',
     config.monitoring !== undefined ? config.monitoring : defaultConfig.monitoring
   );
   
-  // 設定の確認
-  console.log('\n📋 プロジェクト設定の概要:');
-  console.log(`プロジェクト名: ${config.name}`);
-  console.log(`説明: ${config.description}`);
-  console.log(`バージョン: ${config.version}`);
-  console.log(`作者: ${config.author}`);
-  console.log(`モジュール: ${config.modules.join(', ')}`);
-  console.log(`フロントエンド: ${config.frontends.join(', ')}`);
-  console.log(`データベース: ${config.database}`);
-  console.log(`キャッシュ: ${config.cache}`);
-  console.log(`モニタリング: ${config.monitoring ? '有効' : '無効'}`);
+  // Configuration summary
+  console.log('\nProject Configuration Summary:');
+  console.log(`Project name: ${config.name}`);
+  console.log(`Description: ${config.description}`);
+  console.log(`Version: ${config.version}`);
+  console.log(`Author: ${config.author}`);
+  console.log(`Modules: ${config.modules.join(', ')}`);
+  console.log(`Frontends: ${config.frontends.join(', ')}`);
+  console.log(`Database: ${config.database}`);
+  console.log(`Cache: ${config.cache}`);
+  console.log(`Monitoring: ${config.monitoring ? 'enabled' : 'disabled'}`);
   
-  const confirm = await askYesNo('\nこの設定でプロジェクトを初期化しますか？');
+  const confirm = await askYesNo('\nInitialize project with these settings?');
   if (!confirm) {
-    console.log('❌ プロジェクトの初期化をキャンセルしました');
+    console.log('Project initialization cancelled');
     rl.close();
     return;
   }
   
-  // プロジェクトの初期化
+  // Project initialization
   try {
     updatePackageJson(config);
     updateReadme(config);
@@ -364,22 +364,22 @@ async function initProject() {
     updateDockerCompose(config);
     saveProjectConfig(config);
     
-    console.log('\n✅ プロジェクトの初期化が完了しました');
-    console.log('\n次のステップ:');
-    console.log('1. pnpm install を実行して依存関係をインストールします');
-    console.log('2. pnpm dev を実行して開発サーバーを起動します');
-    console.log('3. docker-compose up -d を実行してコンテナを起動します');
+    console.log('\nProject initialization completed');
+    console.log('\nNext steps:');
+    console.log('1. Run pnpm install to install dependencies');
+    console.log('2. Run pnpm dev to start the development server');
+    console.log('3. Run docker-compose up -d to start containers');
   } catch (error) {
-    console.error('❌ プロジェクトの初期化中にエラーが発生しました:', error);
+    console.error('An error occurred during project initialization:', error);
   }
   
   rl.close();
 }
 
-// スクリプトが直接実行された場合
+// When script is executed directly
 if (require.main === module) {
   initProject().catch(err => {
-    console.error('❌ プロジェクト初期化中にエラーが発生しました:', err);
+    console.error('An error occurred during project initialization:', err);
     process.exit(1);
   });
 }

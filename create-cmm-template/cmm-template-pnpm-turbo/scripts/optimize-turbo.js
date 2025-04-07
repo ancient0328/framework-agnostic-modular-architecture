@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * Turborepo最適化スクリプト
- * プロジェクトの規模や要件に応じてTurborepoの設定を最適化します
+ * Turborepo Optimization Script
+ * Optimizes Turborepo configuration based on project scale and requirements
  */
 
 const fs = require('fs');
@@ -14,20 +14,20 @@ const rl = readline.createInterface({
   output: process.stdout
 });
 
-// プロジェクトのルートディレクトリ
+// Project root directory
 const rootDir = path.join(__dirname, '..');
 
-// Turborepo設定ファイル
+// Turborepo configuration file
 const turboConfigFile = path.join(rootDir, 'turbo.json');
 
-// プロジェクト設定ファイル
+// Project configuration file
 const projectConfigFile = path.join(rootDir, '.project-config.json');
 
 /**
- * 質問を表示して回答を取得する
- * @param {string} question - 質問文
- * @param {string} defaultValue - デフォルト値
- * @returns {Promise<string>} - ユーザーの回答
+ * Display a question and get the answer
+ * @param {string} question - Question text
+ * @param {string} defaultValue - Default value
+ * @returns {Promise<string>} - User's answer
  */
 function askQuestion(question, defaultValue = '') {
   const defaultText = defaultValue ? ` (${defaultValue})` : '';
@@ -39,10 +39,10 @@ function askQuestion(question, defaultValue = '') {
 }
 
 /**
- * はい/いいえの質問
- * @param {string} question - 質問文
- * @param {boolean} defaultValue - デフォルト値
- * @returns {Promise<boolean>} - ユーザーの回答
+ * Yes/No question
+ * @param {string} question - Question text
+ * @param {boolean} defaultValue - Default value
+ * @returns {Promise<boolean>} - User's answer
  */
 async function askYesNo(question, defaultValue = true) {
   const defaultText = defaultValue ? 'Y/n' : 'y/N';
@@ -54,24 +54,24 @@ async function askYesNo(question, defaultValue = true) {
 }
 
 /**
- * 複数選択肢から選択する
- * @param {string} question - 質問文
- * @param {string[]} choices - 選択肢
- * @param {string[]} defaults - デフォルト選択
- * @returns {Promise<string[]>} - 選択された項目
+ * Select from multiple choices
+ * @param {string} question - Question text
+ * @param {string[]} choices - Options
+ * @param {string[]} defaults - Default selections
+ * @returns {Promise<string[]>} - Selected items
  */
 async function askMultipleChoice(question, choices, defaults = []) {
-  console.log(`${question} (カンマ区切りで複数選択可、空白で${defaults.join(', ')})`);
+  console.log(`${question} (comma-separated for multiple choices, empty for ${defaults.join(', ')})`);
   choices.forEach((choice, index) => {
     const isDefault = defaults.includes(choice);
-    console.log(`${index + 1}. ${choice}${isDefault ? ' (デフォルト)' : ''}`);
+    console.log(`${index + 1}. ${choice}${isDefault ? ' (default)' : ''}`);
   });
   
-  const answer = await askQuestion('選択してください（番号またはカンマ区切りの名前）');
+  const answer = await askQuestion('Please select (numbers or comma-separated names)');
   
   if (!answer) return defaults;
   
-  // 番号で選択された場合
+  // Selection by number
   if (/^[0-9,]+$/.test(answer)) {
     return answer.split(',')
       .map(num => parseInt(num.trim(), 10))
@@ -79,22 +79,22 @@ async function askMultipleChoice(question, choices, defaults = []) {
       .map(num => choices[num - 1]);
   }
   
-  // 名前で選択された場合
+  // Selection by name
   return answer.split(',')
     .map(name => name.trim())
     .filter(name => choices.includes(name));
 }
 
 /**
- * 現在のTurborepo設定を読み込む
- * @returns {Object} - Turborepo設定
+ * Load current Turborepo configuration
+ * @returns {Object} - Turborepo configuration
  */
 function loadTurboConfig() {
   if (fs.existsSync(turboConfigFile)) {
     try {
       return JSON.parse(fs.readFileSync(turboConfigFile, 'utf8'));
     } catch (error) {
-      console.error('⚠️ turbo.jsonの読み込みに失敗しました:', error);
+      console.error('Failed to load turbo.json:', error);
       return getDefaultTurboConfig();
     }
   }
@@ -103,8 +103,8 @@ function loadTurboConfig() {
 }
 
 /**
- * デフォルトのTurborepo設定を取得
- * @returns {Object} - デフォルトのTurborepo設定
+ * Get default Turborepo configuration
+ * @returns {Object} - Default Turborepo configuration
  */
 function getDefaultTurboConfig() {
   return {
@@ -136,15 +136,15 @@ function getDefaultTurboConfig() {
 }
 
 /**
- * プロジェクト設定を読み込む
- * @returns {Object} - プロジェクト設定
+ * Load project configuration
+ * @returns {Object} - Project configuration
  */
 function loadProjectConfig() {
   if (fs.existsSync(projectConfigFile)) {
     try {
       return JSON.parse(fs.readFileSync(projectConfigFile, 'utf8'));
     } catch (error) {
-      console.error('⚠️ プロジェクト設定の読み込みに失敗しました:', error);
+      console.error('Failed to load project configuration:', error);
       return {};
     }
   }
@@ -153,38 +153,38 @@ function loadProjectConfig() {
 }
 
 /**
- * Turborepo設定を保存する
- * @param {Object} config - Turborepo設定
+ * Save Turborepo configuration
+ * @param {Object} config - Turborepo configuration
  */
 function saveTurboConfig(config) {
   fs.writeFileSync(turboConfigFile, JSON.stringify(config, null, 2));
-  console.log('✅ turbo.jsonを更新しました');
+  console.log('Updated turbo.json');
 }
 
 /**
- * プロジェクトの規模に基づいてTurborepo設定を最適化
- * @param {string} projectSize - プロジェクトの規模
- * @param {Object} turboConfig - Turborepo設定
- * @returns {Object} - 最適化されたTurborepo設定
+ * Optimize Turborepo configuration based on project scale
+ * @param {string} projectSize - Project scale
+ * @param {Object} turboConfig - Turborepo configuration
+ * @returns {Object} - Optimized Turborepo configuration
  */
 function optimizeForProjectSize(projectSize, turboConfig) {
   const config = { ...turboConfig };
   
   switch (projectSize) {
     case 'small':
-      // 小規模プロジェクト向け最適化
+      // Optimization for small projects
       config.pipeline.build.outputs = ["dist/**"];
-      // キャッシュ設定を簡素化
+      // Simplify cache settings
       delete config.pipeline.test.inputs;
       break;
       
     case 'medium':
-      // 中規模プロジェクト向け最適化（デフォルト設定を使用）
+      // Optimization for medium projects (use default settings)
       break;
       
     case 'large':
-      // 大規模プロジェクト向け最適化
-      // より詳細なキャッシュ設定
+      // Optimization for large projects
+      // More detailed cache settings
       config.pipeline.build.inputs = ["src/**", "package.json"];
       config.pipeline.test.inputs = [
         "src/**/*.tsx", 
@@ -193,7 +193,7 @@ function optimizeForProjectSize(projectSize, turboConfig) {
         "test/**/*.tsx",
         "**/*.json"
       ];
-      // 追加のタスク
+      // Additional tasks
       config.pipeline.typecheck = {
         dependsOn: ["^build"],
         inputs: ["src/**/*.tsx", "src/**/*.ts"]
@@ -205,27 +205,27 @@ function optimizeForProjectSize(projectSize, turboConfig) {
 }
 
 /**
- * ビルドパフォーマンスに基づいてTurborepo設定を最適化
- * @param {boolean} optimizeForSpeed - 速度重視の最適化
- * @param {Object} turboConfig - Turborepo設定
- * @returns {Object} - 最適化されたTurborepo設定
+ * Optimize Turborepo configuration based on build performance
+ * @param {boolean} optimizeForSpeed - Prioritize speed optimization
+ * @param {Object} turboConfig - Turborepo configuration
+ * @returns {Object} - Optimized Turborepo configuration
  */
 function optimizeForPerformance(optimizeForSpeed, turboConfig) {
   const config = { ...turboConfig };
   
   if (optimizeForSpeed) {
-    // 速度重視の最適化
-    // 並列実行の最大化
+    // Speed-focused optimization
+    // Maximize parallel execution
     config.pipeline.build.dependsOn = ["^build"];
-    // キャッシュの積極的な活用
+    // Aggressive caching
     if (!config.pipeline.build.inputs) {
       config.pipeline.build.inputs = ["src/**", "package.json"];
     }
   } else {
-    // 安定性重視の最適化
-    // より保守的な依存関係
+    // Stability-focused optimization
+    // More conservative dependencies
     config.pipeline.build.dependsOn = ["^build", "lint"];
-    // より厳密なキャッシュ無効化
+    // More strict cache invalidation
     config.pipeline.dev.cache = false;
   }
   
@@ -233,30 +233,30 @@ function optimizeForPerformance(optimizeForSpeed, turboConfig) {
 }
 
 /**
- * モジュール構成に基づいてTurborepo設定を最適化
- * @param {string[]} modules - モジュール一覧
- * @param {Object} turboConfig - Turborepo設定
- * @returns {Object} - 最適化されたTurborepo設定
+ * Optimize Turborepo configuration based on module structure
+ * @param {string[]} modules - Module list
+ * @param {Object} turboConfig - Turborepo configuration
+ * @returns {Object} - Optimized Turborepo configuration
  */
 function optimizeForModules(modules, turboConfig) {
   const config = { ...turboConfig };
   
-  // モジュール固有のタスク設定
+  // Module-specific task settings
   if (modules.length > 3) {
-    // 多数のモジュールがある場合、より詳細なタスク定義
+    // For projects with many modules, define more detailed tasks
     config.pipeline = {
       ...config.pipeline,
-      // モジュール共通のタスク
+      // Common tasks for all modules
       "build": {
         dependsOn: ["^build"],
         outputs: ["dist/**", ".next/**", "build/**"]
       },
-      // APIゲートウェイ固有のタスク
+      // API gateway specific tasks
       "api-gateway#build": {
         dependsOn: ["^build"],
         outputs: ["dist/**"]
       },
-      // フロントエンド固有のタスク
+      // Frontend specific tasks
       "frontend#build": {
         dependsOn: ["^build", "sync-assets"],
         outputs: ["dist/**", ".next/**", "build/**"]
@@ -268,28 +268,28 @@ function optimizeForModules(modules, turboConfig) {
 }
 
 /**
- * キャッシュ設定を最適化
- * @param {string} cacheStrategy - キャッシュ戦略
- * @param {Object} turboConfig - Turborepo設定
- * @returns {Object} - 最適化されたTurborepo設定
+ * Optimize cache settings
+ * @param {string} cacheStrategy - Cache strategy
+ * @param {Object} turboConfig - Turborepo configuration
+ * @returns {Object} - Optimized Turborepo configuration
  */
 function optimizeCacheStrategy(cacheStrategy, turboConfig) {
   const config = { ...turboConfig };
   
   switch (cacheStrategy) {
     case 'aggressive':
-      // 積極的なキャッシュ戦略
+      // Aggressive caching strategy
       config.pipeline.build.inputs = ["src/**", "package.json"];
       config.pipeline.test.inputs = ["src/**", "test/**", "package.json"];
       break;
       
     case 'balanced':
-      // バランスの取れたキャッシュ戦略（デフォルト）
+      // Balanced caching strategy (default)
       break;
       
     case 'conservative':
-      // 保守的なキャッシュ戦略
-      // キャッシュの利用を最小限に
+      // Conservative caching strategy
+      // Minimize cache usage
       config.pipeline.build.cache = false;
       config.pipeline.test.cache = false;
       break;
@@ -299,57 +299,57 @@ function optimizeCacheStrategy(cacheStrategy, turboConfig) {
 }
 
 /**
- * Turborepo設定を最適化する
+ * Optimize Turborepo configuration
  */
 async function optimizeTurbo() {
-  console.log('🔧 Turborepo設定の最適化を開始します');
+  console.log('Starting Turborepo configuration optimization');
   
-  // 現在の設定を読み込む
+  // Load current configuration
   let turboConfig = loadTurboConfig();
   const projectConfig = loadProjectConfig();
   
-  // プロジェクトの規模
+  // Project scale
   const projectSize = await askQuestion(
-    'プロジェクトの規模を選択してください',
+    'Select project scale',
     'medium',
     ['small', 'medium', 'large']
   );
   
-  // パフォーマンス最適化の方針
+  // Performance optimization approach
   const optimizeForSpeed = await askYesNo(
-    'ビルド速度を優先しますか？（いいえの場合は安定性優先）',
+    'Prioritize build speed? (No for stability priority)',
     true
   );
   
-  // キャッシュ戦略
+  // Cache strategy
   const cacheStrategy = await askQuestion(
-    'キャッシュ戦略を選択してください',
+    'Select cache strategy',
     'balanced',
     ['aggressive', 'balanced', 'conservative']
   );
   
-  // モジュール構成
+  // Module structure
   const modules = projectConfig.modules || 
     await askMultipleChoice(
-      'プロジェクトに含まれるモジュールを選択してください',
+      'Select modules included in the project',
       ['api-gateway', 'auth', 'module-a', 'module-b', 'module-c'],
       ['api-gateway', 'auth', 'module-a', 'module-b']
     );
   
-  // 追加のタスク
+  // Additional tasks
   const additionalTasks = await askMultipleChoice(
-    '追加のタスクを選択してください',
+    'Select additional tasks',
     ['typecheck', 'format', 'deploy', 'storybook', 'e2e'],
     []
   );
   
-  // 設定の最適化
+  // Configuration optimization
   turboConfig = optimizeForProjectSize(projectSize, turboConfig);
   turboConfig = optimizeForPerformance(optimizeForSpeed, turboConfig);
   turboConfig = optimizeForModules(modules, turboConfig);
   turboConfig = optimizeCacheStrategy(cacheStrategy, turboConfig);
   
-  // 追加のタスクを設定
+  // Configure additional tasks
   additionalTasks.forEach(task => {
     switch (task) {
       case 'typecheck':
@@ -389,36 +389,36 @@ async function optimizeTurbo() {
     }
   });
   
-  // 設定の確認
-  console.log('\n📋 最適化されたTurborepo設定の概要:');
-  console.log(`プロジェクト規模: ${projectSize}`);
-  console.log(`最適化方針: ${optimizeForSpeed ? '速度優先' : '安定性優先'}`);
-  console.log(`キャッシュ戦略: ${cacheStrategy}`);
-  console.log(`モジュール: ${modules.join(', ')}`);
-  console.log(`追加タスク: ${additionalTasks.length > 0 ? additionalTasks.join(', ') : 'なし'}`);
+  // Configuration summary
+  console.log('\nOptimized Turborepo configuration summary:');
+  console.log(`Project scale: ${projectSize}`);
+  console.log(`Optimization approach: ${optimizeForSpeed ? 'Speed priority' : 'Stability priority'}`);
+  console.log(`Cache strategy: ${cacheStrategy}`);
+  console.log(`Modules: ${modules.join(', ')}`);
+  console.log(`Additional tasks: ${additionalTasks.length > 0 ? additionalTasks.join(', ') : 'None'}`);
   
-  const confirm = await askYesNo('\nこの設定でturbo.jsonを更新しますか？');
+  const confirm = await askYesNo('\nUpdate turbo.json with this configuration?');
   if (!confirm) {
-    console.log('❌ Turborepo設定の最適化をキャンセルしました');
+    console.log('Turborepo configuration optimization cancelled');
     rl.close();
     return;
   }
   
-  // 設定の保存
+  // Save configuration
   saveTurboConfig(turboConfig);
   
-  console.log('\n✅ Turborepo設定の最適化が完了しました');
-  console.log('\n最適化されたTurborepoを使用するには:');
-  console.log('1. pnpm build を実行してビルドパフォーマンスを確認します');
-  console.log('2. pnpm turbo run build --dry を実行して依存関係グラフを確認します');
+  console.log('\nTurborepo configuration optimization completed');
+  console.log('\nTo use the optimized Turborepo:');
+  console.log('1. Run pnpm build to check build performance');
+  console.log('2. Run pnpm turbo run build --dry to verify the dependency graph');
   
   rl.close();
 }
 
-// スクリプトが直接実行された場合
+// When script is executed directly
 if (require.main === module) {
   optimizeTurbo().catch(err => {
-    console.error('❌ Turborepo設定の最適化中にエラーが発生しました:', err);
+    console.error('Error occurred during Turborepo configuration optimization:', err);
     process.exit(1);
   });
 }

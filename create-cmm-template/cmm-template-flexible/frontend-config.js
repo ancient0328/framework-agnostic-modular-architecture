@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * フロントエンドフレームワーク設定スクリプト
- * プロジェクトで使用するフロントエンドフレームワークの設定を管理します
+ * Frontend Framework Configuration Script
+ * Manages the frontend framework configuration used in the project
  */
 
 const fs = require('fs');
@@ -11,7 +11,7 @@ const { execSync } = require('child_process');
 const readline = require('readline');
 const { getPackageManagerConfig } = require('./package-manager');
 
-// サポートするフロントエンドフレームワーク
+// Supported frontend frameworks
 const FRONTEND_FRAMEWORKS = {
   react: {
     name: 'React',
@@ -105,7 +105,7 @@ const FRONTEND_FRAMEWORKS = {
 };
 
 /**
- * フロントエンドフレームワークを対話的に選択
+ * Select frontend framework interactively
  */
 async function selectFrontendFramework() {
   const rl = readline.createInterface({
@@ -114,13 +114,13 @@ async function selectFrontendFramework() {
   });
 
   return new Promise((resolve) => {
-    console.log('フロントエンドフレームワークを選択してください:');
+    console.log('Select a frontend framework:');
     
     Object.entries(FRONTEND_FRAMEWORKS).forEach(([key, framework], index) => {
       console.log(`${index + 1}. ${framework.name}`);
     });
     
-    rl.question('選択 (デフォルト: React): ', (answer) => {
+    rl.question('Selection (default: React): ', (answer) => {
       rl.close();
       
       const selection = answer.trim();
@@ -141,7 +141,7 @@ async function selectFrontendFramework() {
 }
 
 /**
- * 選択されたフロントエンドフレームワークの設定を保存
+ * Save selected frontend framework configuration
  */
 function saveFrontendConfig(key) {
   const config = {
@@ -158,7 +158,7 @@ function saveFrontendConfig(key) {
 }
 
 /**
- * 現在のフロントエンドフレームワーク設定を取得
+ * Get current frontend framework configuration
  */
 function getFrontendConfig() {
   const configPath = path.join(process.cwd(), '.frontend-framework.json');
@@ -167,7 +167,7 @@ function getFrontendConfig() {
     return JSON.parse(fs.readFileSync(configPath, 'utf8'));
   }
   
-  // デフォルトはReact
+  // Default is React
   return {
     key: 'react',
     ...FRONTEND_FRAMEWORKS.react
@@ -175,20 +175,20 @@ function getFrontendConfig() {
 }
 
 /**
- * 新しいフロントエンドプロジェクトを作成
+ * Create a new frontend project
  */
 function createFrontendProject(framework, projectPath, options = {}) {
   const packageManager = getPackageManagerConfig();
   const createCommand = framework.createCmd[packageManager.name];
   
   if (!createCommand) {
-    throw new Error(`${packageManager.name}で${framework.name}プロジェクトを作成する方法が定義されていません`);
+    throw new Error(`No method defined to create a ${framework.name} project with ${packageManager.name}`);
   }
   
   const projectName = path.basename(projectPath);
   const command = `${createCommand} ${projectName} ${options.args || ''}`;
   
-  console.log(`フロントエンドプロジェクトを作成中: ${command}`);
+  console.log(`Creating frontend project: ${command}`);
   
   try {
     execSync(command, {
@@ -196,22 +196,22 @@ function createFrontendProject(framework, projectPath, options = {}) {
       stdio: 'inherit'
     });
     
-    console.log(`${framework.name}プロジェクトが正常に作成されました: ${projectPath}`);
+    console.log(`${framework.name} project successfully created: ${projectPath}`);
     return true;
   } catch (error) {
-    console.error(`プロジェクト作成中にエラーが発生しました: ${error.message}`);
+    console.error(`Error occurred during project creation: ${error.message}`);
     return false;
   }
 }
 
-// コマンドライン引数に応じた処理
+// Process based on command line arguments
 async function main() {
   const args = process.argv.slice(2);
   
   if (args.includes('--select')) {
     const selected = await selectFrontendFramework();
     const config = saveFrontendConfig(selected);
-    console.log(`フロントエンドフレームワークを ${config.name} に設定しました`);
+    console.log(`Frontend framework set to ${config.name}`);
     return config;
   }
   
@@ -226,7 +226,7 @@ async function main() {
     const pathArg = args[args.indexOf('--create') + 2];
     
     if (!pathArg) {
-      console.error('プロジェクトパスを指定してください');
+      console.error('Please specify a project path');
       process.exit(1);
     }
     
@@ -237,11 +237,11 @@ async function main() {
     return createFrontendProject(framework, pathArg);
   }
   
-  // デフォルトは現在の設定を返す
+  // Default is to return current configuration
   return getFrontendConfig();
 }
 
-// モジュールとして使用する場合のエクスポート
+// Export for module usage
 module.exports = {
   selectFrontendFramework,
   saveFrontendConfig,
@@ -250,7 +250,7 @@ module.exports = {
   FRONTEND_FRAMEWORKS
 };
 
-// コマンドラインから直接実行された場合
+// When executed directly from command line
 if (require.main === module) {
   main().catch(console.error);
 }

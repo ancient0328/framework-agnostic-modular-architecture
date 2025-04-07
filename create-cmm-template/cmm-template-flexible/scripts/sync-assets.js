@@ -1,13 +1,13 @@
 /**
- * アセット同期スクリプト
- * 共有アセットを各モジュールに同期します
+ * Asset Synchronization Script
+ * Synchronizes shared assets to each module
  */
 
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-// 設定
+// Configuration
 const rootDir = path.resolve(__dirname, '..');
 const sharedAssetsDir = path.join(rootDir, 'assets');
 const targetDirs = [
@@ -18,7 +18,7 @@ const targetDirs = [
   path.join(rootDir, 'modules', 'module-b', 'frontend', 'src', 'assets'),
 ];
 
-// コマンドライン引数の解析
+// Parse command line arguments
 const args = process.argv.slice(2);
 const options = {
   modules: null,
@@ -36,19 +36,19 @@ args.forEach(arg => {
   }
 });
 
-// アセット同期関数
+// Asset synchronization function
 async function syncAssets() {
-  console.log('🔄 アセット同期を開始します...');
+  console.log('🔄 Starting asset synchronization...');
   
-  // 共有アセットディレクトリが存在するか確認
+  // Check if shared assets directory exists
   if (!fs.existsSync(sharedAssetsDir)) {
-    console.error(`❌ エラー: 共有アセットディレクトリが見つかりません: ${sharedAssetsDir}`);
+    console.error(`❌ Error: Shared assets directory not found: ${sharedAssetsDir}`);
     return;
   }
 
-  // 各ターゲットディレクトリに対して処理
+  // Process each target directory
   for (const targetDir of targetDirs) {
-    // モジュールフィルタリング
+    // Module filtering
     if (options.modules) {
       const moduleName = targetDir.split(path.sep).find(part => part.startsWith('module-'));
       if (moduleName && !options.modules.includes(moduleName)) {
@@ -56,58 +56,58 @@ async function syncAssets() {
       }
     }
 
-    // ターゲットディレクトリが存在しない場合は作成
+    // Create target directory if it doesn't exist
     if (!fs.existsSync(targetDir)) {
       if (options.dryRun) {
-        console.log(`📝 [ドライラン] ディレクトリを作成します: ${targetDir}`);
+        console.log(`📝 [Dry Run] Creating directory: ${targetDir}`);
       } else {
-        console.log(`📁 ディレクトリを作成します: ${targetDir}`);
+        console.log(`📁 Creating directory: ${targetDir}`);
         fs.mkdirSync(targetDir, { recursive: true });
       }
     }
 
-    // rsyncコマンドを構築
+    // Build rsync command
     let rsyncCommand = `rsync -av --delete`;
     
-    // ファイルタイプフィルタリング
+    // File type filtering
     if (options.fileTypes) {
       const includePatterns = options.fileTypes.map(type => `--include="*.${type}"`).join(' ');
       rsyncCommand += ` ${includePatterns} --exclude="*"`;
     }
     
-    // ドライランオプション
+    // Dry run option
     if (options.dryRun) {
       rsyncCommand += ` --dry-run`;
     }
     
-    // ソースとターゲットを追加
+    // Add source and target
     rsyncCommand += ` ${sharedAssetsDir}/ ${targetDir}/`;
     
     try {
       if (options.dryRun) {
-        console.log(`📝 [ドライラン] 実行コマンド: ${rsyncCommand}`);
+        console.log(`📝 [Dry Run] Command to execute: ${rsyncCommand}`);
       }
       
-      // rsyncを実行
+      // Execute rsync
       const output = execSync(rsyncCommand, { encoding: 'utf8' });
       
       if (options.dryRun) {
-        console.log(`📝 [ドライラン] ${targetDir} への同期をシミュレーションしました`);
+        console.log(`📝 [Dry Run] Simulated synchronization to ${targetDir}`);
         if (output) console.log(output);
       } else {
-        console.log(`✅ ${targetDir} への同期が完了しました`);
+        console.log(`✅ Synchronization to ${targetDir} completed`);
       }
     } catch (error) {
-      console.error(`❌ エラー: ${targetDir} への同期に失敗しました`);
+      console.error(`❌ Error: Failed to synchronize to ${targetDir}`);
       console.error(error.message);
     }
   }
   
-  console.log('🎉 アセット同期が完了しました');
+  console.log('🎉 Asset synchronization completed');
 }
 
-// スクリプト実行
+// Execute script
 syncAssets().catch(err => {
-  console.error('❌ 予期せぬエラーが発生しました:', err);
+  console.error('❌ Unexpected error occurred:', err);
   process.exit(1);
 });

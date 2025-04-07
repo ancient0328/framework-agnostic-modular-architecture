@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * パッケージマネージャー検出・選択スクリプト
- * プロジェクト内で一貫したパッケージマネージャーの使用を支援します
+ * Package Manager Detection and Selection Script
+ * Helps maintain consistent package manager usage within the project
  */
 
 const fs = require('fs');
@@ -10,7 +10,7 @@ const path = require('path');
 const { execSync } = require('child_process');
 const readline = require('readline');
 
-// 検出可能なパッケージマネージャー
+// Detectable package managers
 const PACKAGE_MANAGERS = {
   npm: {
     lockfile: 'package-lock.json',
@@ -42,32 +42,32 @@ const PACKAGE_MANAGERS = {
 };
 
 /**
- * 使用中のパッケージマネージャーを検出
+ * Detect current package manager
  */
 function detectPackageManager() {
-  // ロックファイルの存在確認
+  // Check for lockfiles
   for (const [name, config] of Object.entries(PACKAGE_MANAGERS)) {
     if (fs.existsSync(path.join(process.cwd(), config.lockfile))) {
       return name;
     }
   }
 
-  // グローバルにインストールされているパッケージマネージャーを確認
+  // Check for globally installed package managers
   for (const name of Object.keys(PACKAGE_MANAGERS)) {
     try {
       execSync(`${name} --version`, { stdio: 'ignore' });
       return name;
     } catch (e) {
-      // コマンドが見つからない場合は次へ
+      // Command not found, try next
     }
   }
 
-  // デフォルトはnpm
+  // Default to npm
   return 'npm';
 }
 
 /**
- * パッケージマネージャーを対話的に選択
+ * Select package manager interactively
  */
 async function selectPackageManager() {
   const detected = detectPackageManager();
@@ -79,11 +79,11 @@ async function selectPackageManager() {
 
   return new Promise((resolve) => {
     rl.question(
-      `パッケージマネージャーを選択してください (検出: ${detected}):\n` +
+      `Select a package manager (detected: ${detected}):\n` +
       `1. npm\n` +
       `2. yarn\n` +
       `3. pnpm\n` +
-      `選択 (デフォルト: ${detected}): `,
+      `Selection (default: ${detected}): `,
       (answer) => {
         rl.close();
         
@@ -104,7 +104,7 @@ async function selectPackageManager() {
 }
 
 /**
- * 選択されたパッケージマネージャーの設定を保存
+ * Save selected package manager configuration
  */
 function savePackageManagerConfig(name) {
   const config = {
@@ -121,7 +121,7 @@ function savePackageManagerConfig(name) {
 }
 
 /**
- * 現在のパッケージマネージャー設定を取得
+ * Get current package manager configuration
  */
 function getPackageManagerConfig() {
   const configPath = path.join(process.cwd(), '.package-manager.json');
@@ -137,14 +137,14 @@ function getPackageManagerConfig() {
   };
 }
 
-// コマンドライン引数に応じた処理
+// Process based on command line arguments
 async function main() {
   const args = process.argv.slice(2);
   
   if (args.includes('--select')) {
     const selected = await selectPackageManager();
     const config = savePackageManagerConfig(selected);
-    console.log(`パッケージマネージャーを ${selected} に設定しました`);
+    console.log(`Package manager set to ${selected}`);
     return config;
   }
   
@@ -154,11 +154,11 @@ async function main() {
     return config;
   }
   
-  // デフォルトは現在の設定を返す
+  // Default is to return current configuration
   return getPackageManagerConfig();
 }
 
-// モジュールとして使用する場合のエクスポート
+// Export for module usage
 module.exports = {
   detectPackageManager,
   selectPackageManager,
@@ -166,7 +166,7 @@ module.exports = {
   getPackageManagerConfig
 };
 
-// コマンドラインから直接実行された場合
+// When executed directly from command line
 if (require.main === module) {
   main().catch(console.error);
 }

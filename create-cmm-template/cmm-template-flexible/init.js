@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * コンテナ化モジュラーモノリスプロジェクト初期化スクリプト
- * 新しいプロジェクトのセットアップを対話的に行います
+ * Containerized Modular Monolith Project Initialization Script
+ * Interactively sets up a new project
  */
 
 const fs = require('fs');
@@ -12,13 +12,13 @@ const readline = require('readline');
 const { selectPackageManager, savePackageManagerConfig } = require('./package-manager');
 const { selectFrontendFramework, saveFrontendConfig, createFrontendProject } = require('./frontend-config');
 
-// 対話型インターフェース
+// Interactive interface
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 });
 
-// プロジェクト設定
+// Project configuration
 let projectConfig = {
   name: '',
   description: '',
@@ -31,7 +31,7 @@ let projectConfig = {
 };
 
 /**
- * 対話形式で質問する
+ * Ask a question interactively
  */
 function question(query) {
   return new Promise((resolve) => {
@@ -42,32 +42,32 @@ function question(query) {
 }
 
 /**
- * プロジェクト名を取得
+ * Get project name
  */
 async function getProjectName() {
   const defaultName = path.basename(process.cwd());
-  const answer = await question(`プロジェクト名 (デフォルト: ${defaultName}): `);
+  const answer = await question(`Project name (default: ${defaultName}): `);
   return answer || defaultName;
 }
 
 /**
- * プロジェクト説明を取得
+ * Get project description
  */
 async function getProjectDescription() {
-  return await question('プロジェクトの説明: ');
+  return await question('Project description: ');
 }
 
 /**
- * データベース選択
+ * Select database
  */
 async function selectDatabase() {
-  console.log('使用するデータベースを選択してください:');
-  console.log('1. PostgreSQL (デフォルト)');
+  console.log('Select a database to use:');
+  console.log('1. PostgreSQL (default)');
   console.log('2. MySQL');
   console.log('3. MongoDB');
   console.log('4. SQLite');
   
-  const answer = await question('選択: ');
+  const answer = await question('Selection: ');
   
   switch (answer) {
     case '2': return 'mysql';
@@ -78,33 +78,33 @@ async function selectDatabase() {
 }
 
 /**
- * Redisの使用有無
+ * Ask whether to use Redis
  */
 async function askUseRedis() {
-  const answer = await question('Redisを使用しますか？ (y/N): ');
+  const answer = await question('Use Redis? (y/N): ');
   return answer.toLowerCase() === 'y';
 }
 
 /**
- * Dockerの使用有無
+ * Ask whether to use Docker
  */
 async function askUseDocker() {
-  const answer = await question('Dockerを使用しますか？ (Y/n): ');
+  const answer = await question('Use Docker? (Y/n): ');
   return answer.toLowerCase() !== 'n';
 }
 
 /**
- * 初期モジュールの選択
+ * Select initial modules
  */
 async function selectInitialModules() {
-  console.log('初期モジュールを選択してください (カンマ区切りで複数選択可):');
-  console.log('1. auth - 認証・認可モジュール');
-  console.log('2. user - ユーザー管理モジュール');
-  console.log('3. notification - 通知モジュール');
-  console.log('4. payment - 決済モジュール');
-  console.log('5. admin - 管理画面モジュール');
+  console.log('Select initial modules (comma-separated for multiple):');
+  console.log('1. auth - Authentication and authorization module');
+  console.log('2. user - User management module');
+  console.log('3. notification - Notification module');
+  console.log('4. payment - Payment module');
+  console.log('5. admin - Admin panel module');
   
-  const answer = await question('選択 (デフォルト: 1,2): ');
+  const answer = await question('Selection (default: 1,2): ');
   
   if (!answer) {
     return ['auth', 'user'];
@@ -125,7 +125,7 @@ async function selectInitialModules() {
 }
 
 /**
- * プロジェクト設定を保存
+ * Save project configuration
  */
 function saveProjectConfig() {
   fs.writeFileSync(
@@ -135,7 +135,7 @@ function saveProjectConfig() {
 }
 
 /**
- * プロジェクト構造を作成
+ * Create project structure
  */
 function createProjectStructure() {
   const directories = [
@@ -150,25 +150,25 @@ function createProjectStructure() {
     'assets'
   ];
   
-  // 選択したモジュールのディレクトリを作成
+  // Create directories for selected modules
   projectConfig.modules.forEach(module => {
     directories.push(`modules/${module}`);
     directories.push(`modules/${module}/backend`);
     directories.push(`modules/${module}/frontend`);
   });
   
-  // ディレクトリ作成
+  // Create directories
   directories.forEach(dir => {
     const dirPath = path.join(process.cwd(), dir);
     if (!fs.existsSync(dirPath)) {
       fs.mkdirSync(dirPath, { recursive: true });
-      console.log(`ディレクトリを作成しました: ${dir}`);
+      console.log(`Created directory: ${dir}`);
     }
   });
 }
 
 /**
- * ルートpackage.jsonを作成
+ * Create root package.json
  */
 function createRootPackageJson() {
   const packageJson = {
@@ -195,11 +195,11 @@ function createRootPackageJson() {
     JSON.stringify(packageJson, null, 2)
   );
   
-  console.log('package.jsonを作成しました');
+  console.log('Created package.json');
 }
 
 /**
- * Docker Composeファイルを作成
+ * Create Docker Compose file
  */
 function createDockerComposeFile() {
   if (!projectConfig.useDocker) {
@@ -208,7 +208,7 @@ function createDockerComposeFile() {
   
   let dbService = '';
   
-  // データベースサービスの設定
+  // Configure database service
   switch (projectConfig.database) {
     case 'postgres':
       dbService = `
@@ -252,7 +252,7 @@ function createDockerComposeFile() {
       break;
   }
   
-  // Redisサービスの設定
+  // Configure Redis service
   const redisService = projectConfig.useRedis ? `
   redis:
     image: redis:7-alpine
@@ -261,7 +261,7 @@ function createDockerComposeFile() {
     volumes:
       - redis_data:/data` : '';
   
-  // モジュールサービスの設定
+  // Configure module services
   const moduleServices = projectConfig.modules.map(module => `
   ${module}:
     build:
@@ -273,7 +273,7 @@ function createDockerComposeFile() {
     depends_on:
       - database${projectConfig.useRedis ? '\n      - redis' : ''}`).join('');
   
-  // Docker Composeファイルの内容
+  // Docker Compose file content
   const dockerCompose = `version: '3.8'
 
 services:
@@ -315,11 +315,11 @@ volumes:${projectConfig.database === 'postgres' ? '\n  postgres_data:' : ''}${pr
     dockerCompose
   );
   
-  console.log('docker-compose.ymlを作成しました');
+  console.log('Created docker-compose.yml');
 }
 
 /**
- * モジュールのポート番号を取得
+ * Get module port number
  */
 function getModulePort(moduleName) {
   const basePorts = {
@@ -334,51 +334,51 @@ function getModulePort(moduleName) {
 }
 
 /**
- * アセット同期スクリプトを作成
+ * Create asset synchronization script
  */
 function createAssetSyncScript() {
   const scriptContent = `#!/usr/bin/env node
 
 /**
- * アセット同期スクリプト
- * 共有アセットを各モジュールに同期します
+ * Asset Synchronization Script
+ * Synchronizes shared assets to each module
  */
 
 const fs = require('fs');
 const path = require('path');
 const glob = require('glob');
 
-// 共有アセットディレクトリ
+// Shared assets directory
 const sharedAssetsDir = path.join(__dirname, '../assets');
 
-// ターゲットディレクトリ
+// Target directories
 const targetDirs = [
   'frontend/web/src/assets',
   'frontend/mobile/src/assets',
   ...glob.sync('modules/*/frontend/src/assets', { cwd: path.join(__dirname, '..') })
 ];
 
-// アセット同期関数
+// Asset synchronization function
 async function syncAssets() {
-  // 共有アセットディレクトリが存在するか確認
+  // Check if shared assets directory exists
   if (!fs.existsSync(sharedAssetsDir)) {
-    console.error(\`❌ エラー: 共有アセットディレクトリが見つかりません: \${sharedAssetsDir}\`);
+    console.error(\`❌ Error: Shared assets directory not found: \${sharedAssetsDir}\`);
     return;
   }
 
-  console.log('🔄 アセット同期を開始します...');
+  console.log('🔄 Starting asset synchronization...');
 
-  // 各ターゲットディレクトリに対して処理
+  // Process each target directory
   for (const relativeDir of targetDirs) {
     const targetDir = path.join(__dirname, '..', relativeDir);
     
-    // ターゲットディレクトリが存在しない場合は作成
+    // Create target directory if it doesn't exist
     if (!fs.existsSync(targetDir)) {
       fs.mkdirSync(targetDir, { recursive: true });
-      console.log(\`📁 ディレクトリを作成しました: \${relativeDir}\`);
+      console.log(\`📁 Created directory: \${relativeDir}\`);
     }
     
-    // アセットファイルをコピー
+    // Copy asset files
     const assetFiles = glob.sync('**/*', { 
       cwd: sharedAssetsDir, 
       nodir: true 
@@ -388,25 +388,25 @@ async function syncAssets() {
       const sourcePath = path.join(sharedAssetsDir, file);
       const targetPath = path.join(targetDir, file);
       
-      // ターゲットディレクトリが存在しない場合は作成
+      // Create target directory if it doesn't exist
       const targetDirPath = path.dirname(targetPath);
       if (!fs.existsSync(targetDirPath)) {
         fs.mkdirSync(targetDirPath, { recursive: true });
       }
       
-      // ファイルをコピー
+      // Copy file
       fs.copyFileSync(sourcePath, targetPath);
-      console.log(\`📄 コピー: \${file} -> \${relativeDir}\`);
+      console.log(\`📄 Copied: \${file} -> \${relativeDir}\`);
     }
   }
 
-  console.log('✅ アセット同期が完了しました');
+  console.log('✅ Asset synchronization completed');
 }
 
-// スクリプトが直接実行された場合
+// When script is executed directly
 if (require.main === module) {
   syncAssets().catch(err => {
-    console.error('❌ アセット同期中にエラーが発生しました:', err);
+    console.error('❌ Error during asset synchronization:', err);
     process.exit(1);
   });
 }
@@ -419,18 +419,18 @@ module.exports = syncAssets;
     scriptContent
   );
   
-  console.log('アセット同期スクリプトを作成しました');
+  console.log('Created asset synchronization script');
 }
 
 /**
- * 開発スクリプトを作成
+ * Create development script
  */
 function createDevScript() {
   const scriptContent = `#!/usr/bin/env node
 
 /**
- * 開発サーバー起動スクリプト
- * 各モジュールの開発サーバーを並行して起動します
+ * Development Server Script
+ * Starts development servers for each module in parallel
  */
 
 const { spawn } = require('child_process');
@@ -439,22 +439,22 @@ const fs = require('fs');
 const syncAssets = require('./sync-assets');
 const { getPackageManagerConfig } = require('../package-manager');
 
-// パッケージマネージャー設定を取得
+// Get package manager configuration
 const packageManager = getPackageManagerConfig();
 
-// プロジェクト設定を取得
+// Get project configuration
 const projectConfig = JSON.parse(
   fs.readFileSync(path.join(__dirname, '../.project-config.json'), 'utf8')
 );
 
-// 開発サーバーを起動する関数
+// Function to start development servers
 async function startDevServers() {
-  // まずアセットを同期
+  // First synchronize assets
   await syncAssets();
   
-  console.log('🚀 開発サーバーを起動します...');
+  console.log('🚀 Starting development servers...');
   
-  // フロントエンドサーバー
+  // Frontend server
   const frontendProcess = spawn(
     packageManager.name,
     [packageManager.runCmd, 'dev'],
@@ -465,7 +465,7 @@ async function startDevServers() {
     }
   );
   
-  // APIゲートウェイ
+  // API Gateway
   const apiGatewayProcess = spawn(
     packageManager.name,
     [packageManager.runCmd, 'dev'],
@@ -476,7 +476,7 @@ async function startDevServers() {
     }
   );
   
-  // 認証サーバー
+  // Authentication server
   const authProcess = spawn(
     packageManager.name,
     [packageManager.runCmd, 'dev'],
@@ -487,7 +487,7 @@ async function startDevServers() {
     }
   );
   
-  // 各モジュールのサーバー
+  // Module servers
   const moduleProcesses = projectConfig.modules.map(module => {
     return spawn(
       packageManager.name,
@@ -500,9 +500,9 @@ async function startDevServers() {
     );
   });
   
-  // プロセス終了時の処理
+  // Cleanup on process exit
   const cleanup = () => {
-    console.log('\\n🛑 開発サーバーを停止します...');
+    console.log('\\n🛑 Stopping development servers...');
     frontendProcess.kill();
     apiGatewayProcess.kill();
     authProcess.kill();
@@ -510,15 +510,15 @@ async function startDevServers() {
     process.exit(0);
   };
   
-  // シグナルハンドリング
+  // Signal handling
   process.on('SIGINT', cleanup);
   process.on('SIGTERM', cleanup);
 }
 
-// スクリプトが直接実行された場合
+// When script is executed directly
 if (require.main === module) {
   startDevServers().catch(err => {
-    console.error('❌ 開発サーバー起動中にエラーが発生しました:', err);
+    console.error('❌ Error starting development servers:', err);
     process.exit(1);
   });
 }
@@ -529,80 +529,80 @@ if (require.main === module) {
     scriptContent
   );
   
-  console.log('開発スクリプトを作成しました');
+  console.log('Created development script');
 }
 
 /**
- * READMEファイルを作成
+ * Create README file
  */
 function createReadme() {
   const readmeContent = `# ${projectConfig.name}
 
 ${projectConfig.description}
 
-## プロジェクト構造
+## Project Structure
 
 \`\`\`
 ${projectConfig.name}/
-├── api-gateway/        # APIゲートウェイ
-├── auth/               # 認証・認可サービス
-├── docs/               # ドキュメント
-├── frontend/           # フロントエンド
-│   ├── web/            # Webアプリケーション
-│   └── mobile/         # モバイルアプリケーション
-├── modules/            # 機能モジュール
+├── api-gateway/        # API Gateway
+├── auth/               # Authentication Service
+├── docs/               # Documentation
+├── frontend/           # Frontend
+│   ├── web/            # Web Application
+│   └── mobile/         # Mobile Application
+├── modules/            # Functional Modules
 ${projectConfig.modules.map(m => `│   └── ${m}/            # ${getModuleDescription(m)}`).join('\n')}
-├── assets/             # 共有アセット
-├── scripts/            # ユーティリティスクリプト
-├── docker-compose.yml  # Docker構成
-└── package.json        # プロジェクト設定
+├── assets/             # Shared Assets
+├── scripts/            # Utility Scripts
+├── docker-compose.yml  # Docker Configuration
+└── package.json        # Project Configuration
 \`\`\`
 
-## 開発環境のセットアップ
+## Development Environment Setup
 
-### 前提条件
+### Prerequisites
 
-- Node.js ${getNodeVersion()}以上
+- Node.js ${getNodeVersion()} or higher
 - ${projectConfig.packageManager.name}
 - ${projectConfig.useDocker ? 'Docker' : ''}
 
-### インストール
+### Installation
 
 \`\`\`bash
-# 依存関係のインストール
+# Install dependencies
 ${projectConfig.packageManager.installCmd}
 
-# 開発サーバーの起動
+# Start development server
 ${projectConfig.packageManager.runCmd} dev
 \`\`\`
 
 ${projectConfig.useDocker ? `
-### Dockerでの実行
+### Running with Docker
 
 \`\`\`bash
-# コンテナのビルドと起動
+# Build and start containers
 docker-compose up --build
 \`\`\`
 ` : ''}
 
-## 機能モジュール
+## Modules
 
-このプロジェクトは以下のモジュールで構成されています：
+This project consists of the following modules:
 
 ${projectConfig.modules.map(m => `- **${m}**: ${getModuleDescription(m)}`).join('\n')}
 
-## アセット管理
+## Asset Management
 
-共有アセットは \`assets/\` ディレクトリに配置され、各モジュールに自動的に同期されます。
+Shared assets are placed in the \`assets/\` directory and are automatically synchronized to each module.
 
 \`\`\`bash
-# アセットの同期
+# Synchronize assets
 ${projectConfig.packageManager.runCmd} sync-assets
 \`\`\`
 
-## ライセンス
+## License
 
-このプロジェクトは [MIT License](LICENSE) の下で公開されています。
+This project is published under the [MIT License](LICENSE).
 `;
 
   fs.writeFileSync(
@@ -610,26 +610,26 @@ ${projectConfig.packageManager.runCmd} sync-assets
     readmeContent
   );
   
-  console.log('READMEを作成しました');
+  console.log('Created README');
 }
 
 /**
- * モジュールの説明を取得
+ * Get module description
  */
 function getModuleDescription(moduleName) {
   const descriptions = {
-    auth: '認証・認可モジュール',
-    user: 'ユーザー管理モジュール',
-    notification: '通知モジュール',
-    payment: '決済モジュール',
-    admin: '管理画面モジュール'
+    auth: 'Authentication and Authorization Module',
+    user: 'User Management Module',
+    notification: 'Notification Module',
+    payment: 'Payment Module',
+    admin: 'Admin Panel Module'
   };
   
-  return descriptions[moduleName] || `${moduleName}モジュール`;
+  return descriptions[moduleName] || `${moduleName} Module`;
 }
 
 /**
- * Node.jsのバージョンを取得
+ * Get Node.js version
  */
 function getNodeVersion() {
   try {
@@ -641,7 +641,7 @@ function getNodeVersion() {
 }
 
 /**
- * フロントエンドプロジェクトを初期化
+ * Initialize frontend project
  */
 async function initializeFrontend() {
   const webDir = path.join(process.cwd(), 'frontend/web');
@@ -650,7 +650,7 @@ async function initializeFrontend() {
     fs.mkdirSync(webDir, { recursive: true });
   }
   
-  console.log(`フロントエンドプロジェクトを初期化します (${projectConfig.frontendFramework.name})...`);
+  console.log(`Initializing frontend project (${projectConfig.frontendFramework.name})...`);
   
   try {
     createFrontendProject(
@@ -659,48 +659,48 @@ async function initializeFrontend() {
       { args: '--template typescript' }
     );
   } catch (error) {
-    console.error(`フロントエンド初期化中にエラーが発生しました: ${error.message}`);
+    console.error(`Error during frontend initialization: ${error.message}`);
   }
 }
 
 /**
- * メイン処理
+ * Main process
  */
 async function main() {
-  console.log('🚀 コンテナ化モジュラーモノリスプロジェクトの初期化を開始します');
+  console.log('🚀 Starting containerized modular monolith project initialization');
   
   try {
-    // プロジェクト情報の収集
+    // Collect project information
     projectConfig.name = await getProjectName();
     projectConfig.description = await getProjectDescription();
     
-    // パッケージマネージャーの選択
+    // Select package manager
     projectConfig.packageManager = await selectPackageManager();
     savePackageManagerConfig(projectConfig.packageManager);
     
-    // フロントエンドフレームワークの選択
+    // Select frontend framework
     const frontendKey = await selectFrontendFramework();
     projectConfig.frontendFramework = saveFrontendConfig(frontendKey);
     
-    // データベースの選択
+    // Select database
     projectConfig.database = await selectDatabase();
     
-    // Redisの使用有無
+    // Ask about Redis
     projectConfig.useRedis = await askUseRedis();
     
-    // Dockerの使用有無
+    // Ask about Docker
     projectConfig.useDocker = await askUseDocker();
     
-    // 初期モジュールの選択
+    // Select initial modules
     projectConfig.modules = await selectInitialModules();
     
-    // 設定の保存
+    // Save configuration
     saveProjectConfig();
     
-    // プロジェクト構造の作成
+    // Create project structure
     createProjectStructure();
     
-    // 各種ファイルの作成
+    // Create various files
     createRootPackageJson();
     if (projectConfig.useDocker) {
       createDockerComposeFile();
@@ -709,27 +709,27 @@ async function main() {
     createDevScript();
     createReadme();
     
-    // フロントエンドプロジェクトの初期化
+    // Initialize frontend project
     await initializeFrontend();
     
     console.log(`
-✅ プロジェクト初期化が完了しました！
+✅ Project initialization completed!
 
-次のステップ:
-1. 依存関係をインストール: ${projectConfig.packageManager.installCmd}
-2. 開発サーバーを起動: ${projectConfig.packageManager.runCmd} dev
-${projectConfig.useDocker ? `3. Dockerで実行: docker-compose up --build` : ''}
+Next steps:
+1. Install dependencies: ${projectConfig.packageManager.installCmd}
+2. Start development server: ${projectConfig.packageManager.runCmd} dev
+${projectConfig.useDocker ? `3. Run with Docker: docker-compose up --build` : ''}
 
-詳細はREADME.mdを参照してください。
+See README.md for details.
 `);
   } catch (error) {
-    console.error('❌ 初期化中にエラーが発生しました:', error);
+    console.error('❌ Error during initialization:', error);
   } finally {
     rl.close();
   }
 }
 
-// スクリプトが直接実行された場合
+// When script is executed directly
 if (require.main === module) {
   main();
 }
