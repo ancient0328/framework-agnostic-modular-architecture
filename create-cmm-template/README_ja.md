@@ -23,8 +23,11 @@
 git clone https://github.com/ancient0328/containerized-modular-monolith.git
 cd containerized-modular-monolith
 
+# まず依存関係をインストール
+cd create-cmm-template && npm install
+
 # ローカルリポジトリからグローバルインストール
-cd create-cmm-template && npm install -g .
+npm install -g .
 
 # またはローカルインストール後のnpxによる直接実行
 npx create-cmm-template my-app
