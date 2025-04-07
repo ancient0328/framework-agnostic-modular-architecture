@@ -2,7 +2,7 @@
 
 /**
  * create-cmm-template
- * コンテナ化モジュラーモノリスアーキテクチャテンプレート作成ツール
+ * Containerized Modular Monolith Architecture Template Creation Tool
  */
 
 const fs = require('fs-extra');
@@ -13,14 +13,14 @@ const inquirer = require('inquirer');
 const ora = require('ora');
 const { execSync } = require('child_process');
 
-// バージョン情報
+// Version information
 const packageJson = require('./package.json');
 const version = packageJson.version;
 
-// テンプレートのパス
-const templatesDir = path.join(__dirname, 'templates');
+// Template path
+const templatesDir = path.join(__dirname);
 
-// コマンドラインオプションの設定
+// Command line options
 const program = new commander.Command(packageJson.name)
   .version(version)
   .arguments('<project-directory>')
@@ -28,66 +28,66 @@ const program = new commander.Command(packageJson.name)
   .action(name => {
     projectName = name;
   })
-  .option('--template <template-name>', 'テンプレートを指定 (pnpm-turbo, flexible)', 'flexible')
-  .option('--use-npm', 'npmを使用')
-  .option('--use-yarn', 'yarnを使用')
-  .option('--use-pnpm', 'pnpmを使用')
-  .option('--skip-install', 'パッケージのインストールをスキップ')
-  .option('--verbose', '詳細なログを表示')
+  .option('--template <template-name>', 'Specify template (pnpm-turbo, flexible)', 'flexible')
+  .option('--use-npm', 'Use npm')
+  .option('--use-yarn', 'Use yarn')
+  .option('--use-pnpm', 'Use pnpm')
+  .option('--skip-install', 'Skip package installation')
+  .option('--verbose', 'Show detailed logs')
   .allowUnknownOption()
   .on('--help', () => {
     console.log();
-    console.log(`    ${chalk.green('create-cmm-template my-app')} - 新しいプロジェクトを作成`);
-    console.log(`    ${chalk.green('create-cmm-template my-app --template=pnpm-turbo')} - pnpmとTurborepoを使用するテンプレートを選択`);
+    console.log(`    ${chalk.green('create-cmm-template my-app')} - Create a new project`);
+    console.log(`    ${chalk.green('create-cmm-template my-app --template=pnpm-turbo')} - Select template using pnpm and Turborepo`);
     console.log();
   })
   .parse(process.argv);
 
 const options = program.opts();
 
-// プロジェクト名が指定されていない場合
+// If project name is not specified
 if (typeof projectName === 'undefined') {
-  console.error('プロジェクト名を指定してください:');
+  console.error('Please specify the project name:');
   console.log(`  ${chalk.cyan(program.name())} ${chalk.green('<project-directory>')}`);
   console.log();
-  console.log('例:');
+  console.log('Example:');
   console.log(`  ${chalk.cyan(program.name())} ${chalk.green('my-app')}`);
   process.exit(1);
 }
 
-// プロジェクトディレクトリのパス
+// Project directory path
 const projectPath = path.resolve(projectName);
 const projectDirName = path.basename(projectPath);
 
-// 利用可能なテンプレート
+// Available templates
 const validTemplates = ['pnpm-turbo', 'flexible'];
 
-// テンプレートの検証
+// Template validation
 if (!validTemplates.includes(options.template)) {
-  console.error(`テンプレート "${options.template}" は存在しません。`);
-  console.log(`利用可能なテンプレート: ${validTemplates.join(', ')}`);
+  console.error(`Template "${options.template}" does not exist.`);
+  console.log(`Available templates: ${validTemplates.join(', ')}`);
   process.exit(1);
 }
 
-// メイン関数
+// Main function
 async function run() {
   try {
-    // プロジェクト作成の確認
+    // Project creation confirmation
     const { confirm } = await inquirer.prompt([
       {
         type: 'confirm',
         name: 'confirm',
-        message: `${chalk.cyan(projectDirName)} ディレクトリにプロジェクトを作成しますか？`,
+        message: `Create project in ${chalk.cyan(projectDirName)} directory?`,
         default: true
       }
     ]);
 
     if (!confirm) {
-      console.log('プロジェクト作成をキャンセルしました。');
+      console.log('Project creation cancelled.');
       process.exit(0);
     }
 
-    // パッケージマネージャーの選択
+    // Package manager selection
     let packageManager = 'npm';
     if (options.usePnpm) {
       packageManager = 'pnpm';
@@ -100,7 +100,7 @@ async function run() {
         {
           type: 'list',
           name: 'manager',
-          message: 'パッケージマネージャーを選択してください:',
+          message: 'Select a package manager:',
           choices: [
             { name: 'npm', value: 'npm' },
             { name: 'yarn', value: 'yarn' },
@@ -112,31 +112,31 @@ async function run() {
       packageManager = manager;
     }
 
-    // テンプレートのパス
-    const templatePath = path.join(templatesDir, options.template);
+    // Template path
+    const templatePath = path.join(templatesDir, `cmm-template-${options.template}`);
 
-    // プロジェクトディレクトリの作成
-    console.log(`🚀 ${chalk.cyan(projectDirName)} プロジェクトを作成しています...`);
+    // Create project directory
+    console.log(`🚀 Creating ${chalk.cyan(projectDirName)} project...`);
     fs.ensureDirSync(projectName);
 
-    // テンプレートのコピー
-    const spinner = ora('テンプレートをコピーしています...').start();
+    // Copy template
+    const spinner = ora('Copying template...').start();
     fs.copySync(templatePath, projectPath);
-    spinner.succeed('テンプレートをコピーしました。');
+    spinner.succeed('Template copied.');
 
-    // package.jsonの更新
+    // Update package.json
     const pkgJsonPath = path.join(projectPath, 'package.json');
     if (fs.existsSync(pkgJsonPath)) {
       const pkgJson = require(pkgJsonPath);
       pkgJson.name = projectDirName;
       pkgJson.version = '0.1.0';
       
-      // pnpm-turboテンプレートでpnpm以外を使用する場合の警告
+      // Warning for using non-pnpm with pnpm-turbo template
       if (options.template === 'pnpm-turbo' && packageManager !== 'pnpm') {
-        console.warn(chalk.yellow('警告: pnpm-turboテンプレートはpnpmでの使用を推奨します。'));
+        console.warn(chalk.yellow('Warning: pnpm-turbo template is recommended to be used with pnpm.'));
       }
       
-      // パッケージマネージャーの設定
+      // Package manager configuration
       if (options.template === 'flexible') {
         pkgJson.packageManager = `${packageManager} || npm || yarn || pnpm`;
       } else if (packageManager === 'pnpm') {
@@ -149,37 +149,37 @@ async function run() {
       );
     }
 
-    // 依存関係のインストール
+    // Install dependencies
     if (!options.skipInstall) {
       console.log();
-      console.log('📦 依存関係をインストールしています...');
+      console.log('📦 Installing dependencies...');
       
-      const installSpinner = ora('パッケージをインストールしています...').start();
+      const installSpinner = ora('Installing packages...').start();
       
       try {
         const installCmd = getInstallCommand(packageManager);
         execSync(installCmd, { cwd: projectPath, stdio: options.verbose ? 'inherit' : 'pipe' });
-        installSpinner.succeed('パッケージをインストールしました。');
+        installSpinner.succeed('Packages installed.');
       } catch (error) {
-        installSpinner.fail('パッケージのインストールに失敗しました。');
-        console.error(chalk.red('エラー:'), error.message);
+        installSpinner.fail('Failed to install packages.');
+        console.error(chalk.red('Error:'), error.message);
         console.log();
-        console.log(chalk.yellow('手動でインストールを実行してください:'));
+        console.log(chalk.yellow('Please install manually:'));
         console.log(`  cd ${projectDirName}`);
         console.log(`  ${getInstallCommand(packageManager)}`);
       }
     }
 
-    // 初期化スクリプトの実行
+    // Run initialization script
     if (fs.existsSync(path.join(projectPath, 'scripts', 'init-project.js'))) {
       console.log();
-      console.log('🔧 プロジェクトの初期設定を行います...');
+      console.log('🔧 Initializing project...');
       
       const { runInit } = await inquirer.prompt([
         {
           type: 'confirm',
           name: 'runInit',
-          message: '初期化スクリプトを実行しますか？',
+          message: 'Run initialization script?',
           default: true
         }
       ]);
@@ -189,19 +189,19 @@ async function run() {
           const initCmd = `${packageManager} run init`;
           execSync(initCmd, { cwd: projectPath, stdio: 'inherit' });
         } catch (error) {
-          console.error(chalk.red('エラー:'), '初期化スクリプトの実行に失敗しました。');
-          console.log(chalk.yellow('手動で実行してください:'));
+          console.error(chalk.red('Error:'), 'Failed to run initialization script.');
+          console.log(chalk.yellow('Please run manually:'));
           console.log(`  cd ${projectDirName}`);
           console.log(`  ${packageManager} run init`);
         }
       }
     }
 
-    // 完了メッセージ
+    // Completion message
     console.log();
-    console.log(`🎉 ${chalk.green('成功!')} ${chalk.cyan(projectDirName)} プロジェクトが作成されました。`);
+    console.log(`🎉 ${chalk.green('Success!')} ${chalk.cyan(projectDirName)} project has been created.`);
     console.log();
-    console.log('次のステップ:');
+    console.log('Next steps:');
     console.log(`  ${chalk.cyan('cd')} ${projectDirName}`);
     
     if (options.skipInstall) {
@@ -210,20 +210,20 @@ async function run() {
     
     console.log(`  ${chalk.cyan(`${packageManager} run dev`)}`);
     console.log();
-    console.log('詳細なドキュメントは以下を参照してください:');
-    console.log(`  ${chalk.cyan('https://github.com/yourusername/create-cmm-template')}`);
+    console.log('For detailed documentation, please refer to:');
+    console.log(`  ${chalk.cyan('https://github.com/ancient0328/containerized-modular-monolith')}`);
     console.log();
 
   } catch (error) {
-    console.error(chalk.red('エラー:'), error.message);
+    console.error(chalk.red('Error:'), error.message);
     process.exit(1);
   }
 }
 
 /**
- * パッケージマネージャーに応じたインストールコマンドを取得
- * @param {string} packageManager - パッケージマネージャー
- * @returns {string} - インストールコマンド
+ * Get installation command based on package manager
+ * @param {string} packageManager - Package manager
+ * @returns {string} - Installation command
  */
 function getInstallCommand(packageManager) {
   switch (packageManager) {
@@ -237,5 +237,5 @@ function getInstallCommand(packageManager) {
   }
 }
 
-// スクリプトの実行
+// Run script
 run();
