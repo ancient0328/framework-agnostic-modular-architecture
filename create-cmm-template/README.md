@@ -20,12 +20,18 @@ Containerized Modular Monolith Architecture Template Creation Tool
 ## Installation
 
 ```bash
-# Global installation
-npm install -g create-cmm-template
+# Clone the repository
+git clone https://github.com/ancient0328/containerized-modular-monolith.git
+cd containerized-modular-monolith
 
-# Or direct execution
+# Global installation from local repository
+cd create-cmm-template && npm install -g .
+
+# Or direct execution with npx (after local installation)
 npx create-cmm-template my-app
 ```
+
+> Note: This package is not currently published to the npm registry. You need to install it from the local repository.
 
 ## Usage
 

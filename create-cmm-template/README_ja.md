@@ -19,12 +19,18 @@
 ## インストール
 
 ```bash
-# グローバルインストール
-npm install -g create-cmm-template
+# リポジトリをクローン
+git clone https://github.com/ancient0328/containerized-modular-monolith.git
+cd containerized-modular-monolith
 
-# または直接実行
+# ローカルリポジトリからグローバルインストール
+cd create-cmm-template && npm install -g .
+
+# またはローカルインストール後のnpxによる直接実行
 npx create-cmm-template my-app
 ```
+
+> 注意: このパッケージは現在npmレジストリに公開されていません。ローカルリポジトリからインストールする必要があります。
 
 ## 使用方法
 
