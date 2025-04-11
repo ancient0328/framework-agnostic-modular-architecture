@@ -1,10 +1,11 @@
 /**
- * Containerized Modular Monolith Framework Setup Script
+ * Framework-Agnostic Modular Architecture (FAMA) Setup Script
  * 
- * This script performs the initial setup for the Containerized Modular Monolith Framework.
+ * This script performs the initial setup for the Framework-Agnostic Modular Architecture (FAMA).
  * - Setting up the development environment
  * - Installing necessary modules
  * - Configuring initial settings
+ * - Creating directory structure
  */
 
 const fs = require('fs');
@@ -61,7 +62,8 @@ const config = {
   backendFramework: '',
   packageManager: 'npm',
   cloudProvider: 'none',
-  language: 'en' // Default language
+  language: 'en', // Default language
+  createDirectories: true // Default to creating directories
 };
 
 // Load localization
@@ -129,7 +131,7 @@ function showWelcome() {
 function askProjectName() {
   return new Promise((resolve) => {
     rl.question(`${colors.fg.yellow}${locale.project.namePrompt}${colors.reset}`, (answer) => {
-      config.projectName = answer.trim() || 'containerized-modular-monolith-project';
+      config.projectName = answer.trim() || 'framework-agnostic-modular-architecture-project';
       console.log(`${colors.fg.green}${locale.project.nameConfirm}${config.projectName}${colors.reset}`);
       resolve();
     });
@@ -332,12 +334,17 @@ function initializeProject() {
   console.log(`${colors.bright}${colors.fg.cyan}=======================================${colors.reset}`);
   
   // Save configuration file
-  const configPath = path.join(process.cwd(), 'containerized-modular-monolith.config.json');
+  const configPath = path.join(process.cwd(), 'framework-agnostic-modular-architecture.config.json');
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
   console.log(`${colors.fg.green}${locale.initialization.configSaved}${colors.reset}`);
   
   // Create necessary directories
   console.log(`${colors.fg.green}${locale.initialization.creatingDirectories}${colors.reset}`);
+  
+  // Create the complete directory structure
+  if (config.createDirectories) {
+    createDirectoryStructure();
+  }
   
   // Copy sample modules
   if (config.modules.frontend) {
@@ -376,6 +383,168 @@ function initializeProject() {
 }
 
 /**
+ * Create the complete directory structure
+ */
+function createDirectoryStructure() {
+  console.log(`${colors.fg.cyan}Creating Framework-Agnostic Modular Architecture directory structure...${colors.reset}`);
+  
+  // Define the minimum directory structure
+  const directories = [
+    // assets
+    'framework/assets',
+    'framework/assets/fonts',
+    'framework/assets/icons',
+    'framework/assets/images',
+    'framework/assets/images-optimized',
+    
+    // backend
+    'framework/backend',
+    'framework/backend/api-gateway',
+    'framework/backend/auth-service',
+    'framework/backend/modules',
+    
+    // core
+    'framework/core',
+    'framework/core/api',
+    'framework/core/auth',
+    'framework/core/communication',
+    'framework/core/utils',
+    
+    // docs
+    'framework/docs',
+    'framework/docs/api',
+    'framework/docs/architecture',
+    'framework/docs/diagrams',
+    'framework/docs/guides',
+    'framework/docs/learning',
+    'framework/docs/templates',
+    
+    // frontend
+    'framework/frontend',
+    'framework/frontend/core',
+    'framework/frontend/core/web',
+    'framework/frontend/core/mobile',
+    'framework/frontend/modules',
+    
+    // infrastructure
+    'framework/infrastructure',
+    'framework/infrastructure/aws',
+    'framework/infrastructure/azure',
+    'framework/infrastructure/gcp',
+    'framework/infrastructure/on-premise',
+    
+    // scripts
+    'framework/scripts',
+    'framework/scripts/msyn'
+  ];
+  
+  // Create all directories
+  directories.forEach(dir => {
+    const fullPath = path.join(process.cwd(), dir);
+    try {
+      fs.mkdirSync(fullPath, { recursive: true });
+      console.log(`${colors.fg.green}Created directory: ${dir}${colors.reset}`);
+    } catch (error) {
+      console.error(`${colors.fg.red}Error creating directory ${dir}: ${error.message}${colors.reset}`);
+    }
+  });
+  
+  // Create basic files
+  createBasicFiles();
+}
+
+/**
+ * Create basic files in the directory structure
+ */
+function createBasicFiles() {
+  console.log(`${colors.fg.cyan}Creating basic files...${colors.reset}`);
+  
+  // Create registry.json
+  const registryContent = {
+    "version": "1.0.0",
+    "modules": [
+      {
+        "id": "sample-module",
+        "name": "サンプルモジュール",
+        "description": "フレームワークのサンプルモジュール",
+        "path": "sample-module",
+        "implementations": {
+          "web": [],
+          "mobile": []
+        },
+        "version": "0.1.0",
+        "dependencies": [],
+        "enabled": true
+      }
+    ]
+  };
+  
+  const registryPath = path.join(process.cwd(), 'framework/frontend/modules/registry.json');
+  try {
+    fs.writeFileSync(registryPath, JSON.stringify(registryContent, null, 2));
+    console.log(`${colors.fg.green}Created file: framework/frontend/modules/registry.json${colors.reset}`);
+  } catch (error) {
+    console.error(`${colors.fg.red}Error creating registry.json: ${error.message}${colors.reset}`);
+  }
+  
+  // Create README files for key directories
+  const readmeContents = {
+    'framework': '# Framework-Agnostic Modular Architecture (FAMA)\n\nThis is the root directory for the FAMA project structure.',
+    'framework/assets': '# Assets\n\nShared assets for all modules and frameworks.',
+    'framework/backend': '# Backend\n\nBackend services and modules.',
+    'framework/core': '# Core\n\nShared core functionality across all modules and frameworks.',
+    'framework/docs': '# Documentation\n\nProject documentation and guides.',
+    'framework/frontend': '# Frontend\n\nFrontend modules and implementations.',
+    'framework/infrastructure': '# Infrastructure\n\nInfrastructure configuration for different cloud providers.',
+    'framework/scripts': '# Scripts\n\nUtility scripts for development and deployment.'
+  };
+  
+  Object.entries(readmeContents).forEach(([dir, content]) => {
+    const readmePath = path.join(process.cwd(), dir, 'README.md');
+    try {
+      fs.writeFileSync(readmePath, content);
+      console.log(`${colors.fg.green}Created file: ${dir}/README.md${colors.reset}`);
+    } catch (error) {
+      console.error(`${colors.fg.red}Error creating README in ${dir}: ${error.message}${colors.reset}`);
+    }
+  });
+  
+  // Add .gitkeep files to empty directories
+  directories.forEach(dir => {
+    // Skip directories that already have files
+    if (dir === 'framework/frontend/modules') return;
+    
+    const fullPath = path.join(process.cwd(), dir);
+    const gitkeepPath = path.join(fullPath, '.gitkeep');
+    
+    try {
+      // Check if directory exists and is empty
+      if (fs.existsSync(fullPath)) {
+        const files = fs.readdirSync(fullPath);
+        if (files.length === 0) {
+          fs.writeFileSync(gitkeepPath, '');
+          console.log(`${colors.fg.green}Created file: ${dir}/.gitkeep${colors.reset}`);
+        }
+      }
+    } catch (error) {
+      console.error(`${colors.fg.red}Error creating .gitkeep in ${dir}: ${error.message}${colors.reset}`);
+    }
+  });
+}
+
+/**
+ * Ask if user wants to create directory structure
+ */
+function askCreateDirectories() {
+  return new Promise((resolve) => {
+    rl.question(`${colors.fg.yellow}Do you want to create the complete directory structure? (y/n): ${colors.reset}`, (answer) => {
+      config.createDirectories = answer.toLowerCase() === 'y';
+      resolve();
+    });
+  });
+}
+
+/**
  * Main function
  */
 async function main() {
@@ -388,6 +557,7 @@ async function main() {
   await askBackendFramework();
   await askPackageManager();
   await askCloudProvider();
+  await askCreateDirectories();
   
   const confirmed = await confirmSetup();
   
