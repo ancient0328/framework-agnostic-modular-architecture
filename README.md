@@ -97,6 +97,33 @@ framework/
     └── on-premise/               # On-premises configuration
 ```
 
+### Directory Structure Explanation
+
+The FAMA architecture separates concerns through a carefully designed directory structure. Here are some key distinctions:
+
+#### Core vs Implementation
+
+- **Core directories** (`framework/core/*`): Contain framework-agnostic interfaces, types, and utilities that can be shared across all implementations.
+- **Implementation directories** (like `framework/frontend/core/web/[framework]`): Contain specific implementations for a particular framework.
+
+#### Key Directory Distinctions
+
+##### Authentication Components
+
+- **`core/auth/`**: Contains shared authentication interfaces, types, and utilities that are framework-agnostic. This includes token validation logic, authentication state types, and common authentication helpers that can be used by both frontend and backend.
+
+- **`backend/auth-service`**: Contains the actual implementation of the authentication service as a backend microservice. This includes user authentication API endpoints, OAuth/OIDC integration, user database connections, and JWT token issuance/validation logic.
+
+The relationship is that `backend/auth-service` implements the interfaces defined in `core/auth/`, allowing for consistent authentication interfaces across frontend and backend while maintaining separation of concerns.
+
+##### API Components
+
+- **`core/api/`**: Contains API contracts, interface definitions, and type definitions that are shared between frontend and backend.
+
+- **`backend/api-gateway`**: Contains the implementation of the API gateway that routes requests to appropriate backend services.
+
+This separation allows for clear boundaries between shared specifications and actual implementations, making the system more maintainable and adaptable to different frameworks.
+
 ## Getting Started
 
 ### Prerequisites
