@@ -1,6 +1,6 @@
-# Containerized Modular Monolith Framework
+# Framework-Agnostic Modular Architecture (FAMA)
 
-A comprehensive framework for building containerized modular monolith applications that support multiple cloud providers, package managers, and languages.
+A comprehensive architecture for building modular applications that support multiple frameworks, cloud providers, package managers, and languages.
 
 ## Languages
 
@@ -9,7 +9,21 @@ A comprehensive framework for building containerized modular monolith applicatio
 
 ## Overview
 
-This framework provides a structured approach to building applications that can be containerized and deployed to various cloud environments. It combines the advantages of monolithic architecture (simplicity, development speed) with the benefits of microservices (modularity, scalability) while avoiding their drawbacks.
+FAMA (Framework-Agnostic Modular Architecture) provides a structured approach to building applications that can be containerized and deployed to various cloud environments. It combines the advantages of monolithic architecture (simplicity, development speed) with the benefits of microservices (modularity, scalability) while avoiding their drawbacks.
+
+The core philosophy of FAMA is framework independence - allowing teams to select the optimal technology for each module based on specific requirements rather than being locked into a single technology stack.
+
+### Why FAMA?
+
+- **Framework-Agnostic**: Not tied to any specific framework, providing flexibility in technology choices
+- **Modular**: Divides functionality into independent modules with clear boundaries
+- **Architecture**: Represents a design pattern rather than just a tool or library
+
+This name offers several benefits:
+- Concise and memorable (with the FAMA acronym)
+- Not limited to containerization, making it more broadly applicable
+- Clearly communicates that it's a design philosophy rather than a specific implementation
+- Immediately conveys the core value of technical flexibility
 
 ## Documentation
 
@@ -20,6 +34,7 @@ Detailed documentation is available in the `docs` directory:
 
 ## Features
 
+- **Framework Independence**: Freedom to choose the best framework for each module
 - **Cloud-Agnostic Architecture**: Support for deployment to AWS, GCP/Firebase, Azure, and on-premises
 - **Multi-Package Manager Support**: Compatible with npm (default), yarn, and pnpm
 - **Monorepo Management**: Turborepo integration for efficient builds
@@ -289,7 +304,7 @@ npx turbo run build --filter=frontend/modules/[module-name]/web/[framework-2]
 
 ## Multi-Framework Support
 
-This framework supports implementation across multiple frontend frameworks. Depending on your project requirements, you can choose from frameworks such as:
+This architecture supports implementation across multiple frontend frameworks. Depending on your project requirements, you can choose from frameworks such as:
 
 - **Web**: React, Svelte, Vue, Angular, and other modern web frameworks
 - **Mobile**: React Native, Flutter, and other cross-platform frameworks
@@ -297,6 +312,18 @@ This framework supports implementation across multiple frontend frameworks. Depe
 Each module can provide implementations for each framework adopted in the project. The module metadata (`metadata.json`) describes the supported frameworks and their implementation paths.
 
 The application shell (dashboard) references the module registry (`registry.json`) to discover available modules and dynamically load the appropriate framework implementation. This allows users to seamlessly access modules implemented in different frameworks through a consistent interface.
+
+### Framework Selection Freedom
+
+This architecture provides flexibility in choosing frameworks without being locked into a single technology. For example:
+
+- Web using SvelteKit, mobile using Capacitor
+- Web using Next.js, mobile using Flutter
+- Web using Nuxt.js, mobile using Swift/Kotlin
+
+You can freely select the optimal combination based on your project and team needs. Furthermore, you can adopt different frameworks for different modules.
+
+What's important is the "capability to support" various frameworks, not "the need to implement everything simultaneously."
 
 ### Flexibility in Technology Selection
 
@@ -319,6 +346,26 @@ The following strategies are effective for development in a multi-framework envi
 5. **Common state management**: Provide mechanisms for sharing state across frameworks
 
 These strategies enable an integrated environment where modules implemented in different frameworks work together.
+
+## Integration Points
+
+Integration between different frameworks is achieved through:
+
+1. **Common API interfaces**: Standardized API contracts for communication
+2. **Event bus**: For cross-framework event propagation
+3. **Asset synchronization tools**: Like `msyn` for sharing assets across implementations
+4. **Shared configuration**: Common configuration for consistent behavior
+
+This approach allows each part of your application to use the most appropriate technology while maintaining cohesion across the system.
+
+## Business Value
+
+This flexibility not only allows selecting the optimal technology for each feature but also enables:
+
+- Rapid adaptation to market changes and emerging technologies
+- Leveraging team expertise in different frameworks
+- Progressive migration from legacy systems
+- Optimizing performance by using specialized frameworks where needed
 
 ## License
 
