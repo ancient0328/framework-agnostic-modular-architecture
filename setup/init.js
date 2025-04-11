@@ -63,7 +63,8 @@ const config = {
   packageManager: 'npm',
   cloudProvider: 'none',
   language: 'en', // Default language
-  createDirectories: true // Default to creating directories
+  createDirectories: true, // Default to creating directories
+  installMsyn: true // Default to installing msyn
 };
 
 // Load localization
@@ -358,7 +359,14 @@ function initializeProject() {
   }
   
   console.log(`${colors.fg.green}${locale.initialization.installingDependencies}${colors.reset}`);
-  // Add dependency installation code here
+  
+  // Create package.json if it doesn't exist
+  createPackageJson();
+  
+  // Install msyn if requested
+  if (config.installMsyn) {
+    installMsyn();
+  }
   
   console.log('\n');
   console.log(`${colors.bright}${colors.fg.green}=======================================${colors.reset}`);
@@ -375,6 +383,12 @@ function initializeProject() {
   
   if (config.modules.backend) {
     console.log(`  ${config.packageManager} run dev:backend`);
+  }
+  
+  if (config.installMsyn) {
+    console.log('\n');
+    console.log(`${colors.fg.cyan}To use msyn for asset synchronization:${colors.reset}`);
+    console.log(`  npx msyn sync`);
   }
   
   console.log('\n');
@@ -433,9 +447,8 @@ function createDirectoryStructure() {
     'framework/infrastructure/gcp',
     'framework/infrastructure/on-premise',
     
-    // scripts
-    'framework/scripts',
-    'framework/scripts/msyn'
+    // scripts (msyn is now an npm package, so we don't include it here)
+    'framework/scripts'
   ];
   
   // Create all directories
@@ -530,6 +543,142 @@ function createBasicFiles() {
       console.error(`${colors.fg.red}Error creating .gitkeep in ${dir}: ${error.message}${colors.reset}`);
     }
   });
+  
+  // Create .msyn.json configuration file
+  createMsynConfig();
+}
+
+/**
+ * Create .msyn.json configuration file
+ */
+function createMsynConfig() {
+  const msynConfig = {
+    "version": "1.0.0",
+    "language": config.language,
+    "sourceDir": "framework/assets/images",
+    "optimizedDir": "framework/assets/images-optimized",
+    "modules": [
+      {
+        "name": "framework/frontend/core/web/svelte",
+        "targetDir": "static/images",
+        "enabled": config.frontendFramework === 'Svelte'
+      },
+      {
+        "name": "framework/frontend/core/web/react",
+        "targetDir": "public/images",
+        "enabled": config.frontendFramework === 'React'
+      },
+      {
+        "name": "framework/frontend/core/web/vue",
+        "targetDir": "public/images",
+        "enabled": config.frontendFramework === 'Vue'
+      },
+      {
+        "name": "framework/frontend/core/mobile/react-native",
+        "targetDir": "src/assets/images",
+        "enabled": false
+      },
+      {
+        "name": "framework/frontend/core/mobile/flutter",
+        "targetDir": "assets/images",
+        "enabled": false
+      }
+    ],
+    "options": {
+      "autoOptimize": true,
+      "watchDelay": 2000
+    }
+  };
+  
+  const msynConfigPath = path.join(process.cwd(), '.msyn.json');
+  try {
+    fs.writeFileSync(msynConfigPath, JSON.stringify(msynConfig, null, 2));
+    console.log(`${colors.fg.green}Created file: .msyn.json${colors.reset}`);
+  } catch (error) {
+    console.error(`${colors.fg.red}Error creating .msyn.json: ${error.message}${colors.reset}`);
+  }
+}
+
+/**
+ * Create package.json file
+ */
+function createPackageJson() {
+  const packageJsonPath = path.join(process.cwd(), 'package.json');
+  
+  // Check if package.json already exists
+  if (fs.existsSync(packageJsonPath)) {
+    console.log(`${colors.fg.yellow}package.json already exists, updating...${colors.reset}`);
+    try {
+      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+      
+      // Add msyn as a dependency if it doesn't exist
+      if (config.installMsyn) {
+        packageJson.devDependencies = packageJson.devDependencies || {};
+        if (!packageJson.devDependencies.msyn) {
+          packageJson.devDependencies.msyn = "^1.0.0";
+        }
+      }
+      
+      // Update package.json
+      fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+      console.log(`${colors.fg.green}Updated package.json${colors.reset}`);
+    } catch (error) {
+      console.error(`${colors.fg.red}Error updating package.json: ${error.message}${colors.reset}`);
+    }
+  } else {
+    // Create new package.json
+    const packageJson = {
+      "name": config.projectName,
+      "version": "0.1.0",
+      "description": "A project built with Framework-Agnostic Modular Architecture (FAMA)",
+      "main": "index.js",
+      "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+      },
+      "keywords": [
+        "fama",
+        "framework-agnostic",
+        "modular",
+        "architecture"
+      ],
+      "author": "",
+      "license": "MIT",
+      "devDependencies": config.installMsyn ? { "msyn": "^1.0.0" } : {}
+    };
+    
+    try {
+      fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+      console.log(`${colors.fg.green}Created file: package.json${colors.reset}`);
+    } catch (error) {
+      console.error(`${colors.fg.red}Error creating package.json: ${error.message}${colors.reset}`);
+    }
+  }
+}
+
+/**
+ * Install msyn from npm
+ */
+function installMsyn() {
+  console.log(`${colors.fg.green}Installing msyn from npm...${colors.reset}`);
+  try {
+    let cmd;
+    switch (config.packageManager) {
+      case 'yarn':
+        cmd = 'yarn add msyn --dev';
+        break;
+      case 'pnpm':
+        cmd = 'pnpm add msyn --save-dev';
+        break;
+      default:
+        cmd = 'npm install msyn --save-dev';
+    }
+    
+    execSync(cmd, { stdio: 'inherit' });
+    console.log(`${colors.fg.green}msyn installed successfully.${colors.reset}`);
+  } catch (error) {
+    console.error(`${colors.fg.red}Failed to install msyn: ${error.message}${colors.reset}`);
+    console.log(`${colors.fg.yellow}You can install msyn manually later with: ${config.packageManager} install msyn --save-dev${colors.reset}`);
+  }
 }
 
 /**
@@ -539,6 +688,18 @@ function askCreateDirectories() {
   return new Promise((resolve) => {
     rl.question(`${colors.fg.yellow}Do you want to create the complete directory structure? (y/n): ${colors.reset}`, (answer) => {
       config.createDirectories = answer.toLowerCase() === 'y';
+      resolve();
+    });
+  });
+}
+
+/**
+ * Ask if user wants to install msyn
+ */
+function askInstallMsyn() {
+  return new Promise((resolve) => {
+    rl.question(`${colors.fg.yellow}Do you want to install msyn for asset synchronization? (y/n): ${colors.reset}`, (answer) => {
+      config.installMsyn = answer.toLowerCase() === 'y';
       resolve();
     });
   });
@@ -558,6 +719,7 @@ async function main() {
   await askPackageManager();
   await askCloudProvider();
   await askCreateDirectories();
+  await askInstallMsyn();
   
   const confirmed = await confirmSetup();
   

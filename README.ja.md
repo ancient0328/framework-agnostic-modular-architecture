@@ -84,19 +84,78 @@ framework/
 │   └── icons/                    # アイコン
 ├── docs/                         # ドキュメント
 │   ├── api/            　　　　　  # API仕様
-│   ├── architecture/             # アーキテクチャ設計
-│   ├── diagrams/                 # 図表
-│   ├── guides/                   # 開発ガイド
+│   ├── architecture/             # アーキテクチャ図と説明
+│   ├── diagrams/                 # 視覚的な図表
+│   ├── guides/                   # ユーザーガイド
 │   ├── learning/                 # 学習リソース
 │   └── templates/                # テンプレート
-├── scripts/                      # 開発・デプロイメントスクリプト
-│   └──  msyn/                    # モジュール同期ツール
-└── infrastructure/               # インフラストラクチャーコード
-    ├── aws/                      # AWS固有の設定
-    ├── gcp/                      # GCP固有の設定
-    ├── azure/                    # Azure固有の設定
-    └── on-premise/               # オンプレミス設定
+├── scripts/                      # 開発とデプロイメントのスクリプト
+{{ ... }}
+
+## アセット同期ツール（msyn）
+
+FAMAには、異なるフレームワーク実装間でアセットを管理するための強力な同期ツール「msyn」が含まれています。
+
+### 主な機能
+
+- **自動アセット同期**: 有効化されたすべてのモジュール間でアセットを同期
+- **画像最適化**: Webとモバイルのための画像を自動的に最適化
+- **監視モード**: 変更を監視してリアルタイムで同期
+- **多言語インターフェース**: 日本語と英語のインターフェース
+
+### インストール
+
+msynは公式npmパッケージとして利用可能です：
+
+```bash
+# npmを使用
+npm install msyn --save-dev
+
+# yarnを使用
+yarn add msyn --dev
+
+# pnpmを使用
+pnpm add msyn --save-dev
 ```
+
+### フレームワーク別の推奨パス
+
+msynは一般的なフレームワークの推奨パスに対応しています（例）：
+
+- **Svelte Kit**: `static/images/`
+- **Next.js**: `public/images/`
+- **React Native**: `src/assets/images/`
+- **Flutter**: `assets/images/`
+- **Angular**: `src/assets/images/`
+- **Vue.js**: `public/images/`
+
+これらは一般的な例であり、プロジェクトの構造に合わせてカスタマイズ可能です。
+
+### msynの基本的な使い方
+
+```bash
+# アセットの同期
+npx msyn sync
+
+# 変更の監視
+npx msyn watch
+
+# 画像の最適化
+npx msyn optimize
+
+# ヘルプの表示
+npx msyn help
+
+# 言語の変更
+npx msyn lang ja  # 日本語
+npx msyn lang en  # 英語
+```
+
+### 設定ファイル
+
+設定はプロジェクトルートの `.msyn.json` に保存されます。必要に応じて手動で編集することもできます：
+
+{{ ... }}
 
 ## 始め方
 
@@ -187,97 +246,6 @@ pnpm add package-name
 - **オンプレミス**: Docker ComposeとKubernetes設定
 
 セットアップ時に希望のプロバイダーを選択するか、後で手動で設定することができます。
-
-## モジュール同期ツール（msyn）
-
-このフレームワークには、モジュール間のアセットを管理するための組み込みアセット同期ツール「msyn」が含まれています。このツールは、中央の`assets/`ディレクトリから各フロントエンド実装（React、Svelte、Vue、Flutter等）の適切なディレクトリに画像、フォント、アイコンなどのリソースを自動的に同期します。
-
-### msynの主な機能
-
-- **アセット同期**: 共通ディレクトリから各フレームワーク推奨の場所へのアセット同期
-- **差分同期**: 変更されたファイルのみを効率的に同期
-- **SVG最適化**: React Native互換のSVG最適化
-- **監視モード**: ファイル変更を検知して自動同期
-- **対話型設定**: ユーザーフレンドリーな設定ウィザード
-- **多言語対応**: 日本語と英語のインターフェース
-
-### フレームワーク別の推奨パス
-
-msynは以下のような一般的なフレームワークの推奨パスに対応できます（例示）：
-
-- **Svelte Kit**: `static/images/`
-- **Next.js**: `public/images/`
-- **React Native**: `src/assets/images/`
-- **Flutter**: `assets/images/`
-- **Angular**: `src/assets/images/`
-- **Vue.js**: `public/images/`
-
-これらは一般的な例であり、プロジェクトの構造に合わせてカスタマイズ可能です。
-
-### msynの基本的な使い方
-
-```bash
-# 設定ウィザードの実行
-node scripts/msyn/bin/msyn.js config
-
-# アセットの同期
-node scripts/msyn/bin/msyn.js sync
-
-# 詳細出力
-node scripts/msyn/bin/msyn.js sync --verbose
-
-# 強制上書き
-node scripts/msyn/bin/msyn.js sync --force
-
-# 特定のモジュールのみ同期
-node scripts/msyn/bin/msyn.js sync --modules=frontend/core/web/[framework-1],frontend/modules/[module-name]/web/[framework-2]
-
-# 変更の監視
-node scripts/msyn/bin/msyn.js watch
-
-# SVGファイルの最適化
-node scripts/msyn/bin/msyn.js optimize
-
-# 言語の変更
-node scripts/msyn/bin/msyn.js lang ja  # 日本語
-node scripts/msyn/bin/msyn.js lang en  # 英語
-```
-
-### 設定ファイル
-
-設定はプロジェクトルートの `.msyn.json` に保存されます。必要に応じて手動で編集することもできます：
-
-```json
-{
-  "version": "1.0.0",
-  "language": "ja",
-  "sourceDir": "assets/images",
-  "optimizedDir": "assets/images-optimized",
-  "modules": [
-    {
-      "name": "frontend/core/web/[framework-1]",
-      "targetDir": "public/images",
-      "enabled": true
-    },
-    {
-      "name": "frontend/modules/[module-name]/web/[framework-2]",
-      "targetDir": "static/images",
-      "enabled": true
-    },
-    {
-      "name": "frontend/core/mobile/[framework-3]",
-      "targetDir": "assets/images",
-      "enabled": true
-    }
-  ],
-  "options": {
-    "autoOptimize": true,
-    "watchDelay": 2000
-  }
-}
-```
-
-詳細な使用方法については、[msynのドキュメント](./scripts/msyn/README.ja.md)を参照してください。
 
 ## Turborepo統合
 

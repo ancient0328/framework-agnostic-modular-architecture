@@ -90,7 +90,6 @@ framework/
 │   ├── learning/                 # Learning resources
 │   └── templates/                # Templates
 ├── scripts/                      # Development and deployment scripts
-│   └── msyn/                     # Module synchronization tool
 └── infrastructure/               # Infrastructure code
     ├── aws/                      # AWS-specific configuration
     ├── gcp/                      # GCP-specific configuration
@@ -188,18 +187,31 @@ The framework anticipates configurations for multiple cloud providers:
 
 You can select your preferred provider during setup or configure it manually later.
 
-## Module Synchronization Tool (msyn)
+## Asset Synchronization with msyn
 
-This framework includes a built-in asset synchronization tool called "msyn" for managing assets across modules. This tool automatically synchronizes resources such as images, fonts, and icons from the central `assets/` directory to the appropriate directories in each frontend implementation (React, Svelte, Vue, Flutter, etc.).
+FAMA includes a powerful asset synchronization tool called `msyn` that helps manage assets across different framework implementations.
 
-### Key Features of msyn
+### Features
 
-- **Asset Synchronization**: Sync assets from a common directory to each framework's recommended location
-- **Differential Sync**: Efficiently sync only files that have changed
-- **SVG Optimization**: React Native-compatible SVG optimization
-- **Watch Mode**: Detect file changes and sync automatically
-- **Interactive Configuration**: User-friendly configuration wizard
+- **Automatic Asset Synchronization**: Keeps assets in sync across all enabled modules
+- **Image Optimization**: Automatically optimizes images for web and mobile
+- **Watch Mode**: Monitors for changes and syncs in real-time
 - **Multilingual Interface**: Japanese and English interfaces
+
+### Installation
+
+msyn is available as an official npm package:
+
+```bash
+# Using npm
+npm install msyn --save-dev
+
+# Using yarn
+yarn add msyn --dev
+
+# Using pnpm
+pnpm add msyn --save-dev
+```
 
 ### Recommended Paths by Framework
 
@@ -217,30 +229,21 @@ These are common examples and can be customized to match your project structure.
 ### Basic Usage of msyn
 
 ```bash
-# Run the configuration wizard
-node scripts/msyn/bin/msyn.js config
-
 # Synchronize assets
-node scripts/msyn/bin/msyn.js sync
-
-# Verbose output
-node scripts/msyn/bin/msyn.js sync --verbose
-
-# Force overwrite
-node scripts/msyn/bin/msyn.js sync --force
-
-# Sync only specific modules
-node scripts/msyn/bin/msyn.js sync --modules=frontend/core/web/[framework-1],frontend/modules/[module-name]/web/[framework-2]
+npx msyn sync
 
 # Watch for changes
-node scripts/msyn/bin/msyn.js watch
+npx msyn watch
 
-# Optimize SVG files
-node scripts/msyn/bin/msyn.js optimize
+# Optimize images
+npx msyn optimize
+
+# Show help
+npx msyn help
 
 # Change language
-node scripts/msyn/bin/msyn.js lang ja  # Japanese
-node scripts/msyn/bin/msyn.js lang en  # English
+npx msyn lang ja  # Japanese
+npx msyn lang en  # English
 ```
 
 ### Configuration File
