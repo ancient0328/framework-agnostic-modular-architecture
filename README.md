@@ -1,164 +1,327 @@
-# Containerized Modular Monolith Architecture
+# Containerized Modular Monolith Framework
 
-## Language
+A comprehensive framework for building containerized modular monolith applications that support multiple cloud providers, package managers, and languages.
+
+## Languages
 
 - [English (this document)](./README.md)
-- [日本語](./documents/root/README_ja.md)
+- [日本語](./README.ja.md)
 
 ## Overview
 
-This repository provides implementation templates and tools for the Containerized Modular Monolith Architecture. You can easily get started with a design approach that combines the benefits of monolithic and microservice architectures.
-
-## Repository Structure
-
-This repository includes the following components:
-
-1. **[create-cmm-template](./create-cmm-template/)** - Template creation tool (npm package)
-2. **[cmm-template-pnpm-turbo](./cmm-template-pnpm-turbo/)** - Template for fast builds using pnpm and Turborepo
-3. **[cmm-template-flexible](./cmm-template-flexible/)** - Template supporting flexible package managers and frontend frameworks
-4. **[cmm-template-comparison.md](./cmm-template-comparison.md)** - Template comparison document
-
-## Features
-
-- **Modularity**: Separate module structure for each functionality
-- **Containerization**: Consistent environment using Docker
-- **Single Repository**: Integrated code management with monorepo
-- **Independent Deployment**: Ability to deploy modules individually
-- **Flexibility**: Support for various package managers and frontend frameworks
-- **Project Documentation**: Integrated project record management for architecture decisions and implementation details
-
-## Usage
-
-### Installing the Template Creation Tool
-
-```bash
-# Global installation
-npm install -g create-cmm-template
-
-# Or direct execution
-npx create-cmm-template my-app
-```
-
-### Basic Usage
-
-```bash
-# Create a new project
-npx create-cmm-template my-app
-
-# Specify a template
-npx create-cmm-template my-app --template=pnpm-turbo
-
-# Specify a package manager
-npx create-cmm-template my-app --use-npm
-npx create-cmm-template my-app --use-yarn
-npx create-cmm-template my-app --use-pnpm
-```
-
-### Direct Template Usage
-
-You can also use the templates directly:
-
-```bash
-# Using the pnpm-turbo template
-git clone https://github.com/ancient0328/containerized-modular-monolith.git
-cd containerized-modular-monolith/cmm-template-pnpm-turbo
-pnpm install
-pnpm run init
-```
-
-## Templates
-
-### pnpm-turbo
-
-A template featuring fast builds and efficient dependency management using pnpm and Turborepo. Ideal for large-scale projects.
-
-**Features**:
-- Efficient package management with pnpm
-- Fast builds and caching with Turborepo
-- Optimized monorepo configuration
-
-### flexible
-
-A flexible template supporting various package managers and frontend frameworks. Ideal when you need to adapt to existing projects or specific technology stacks.
-
-**Features**:
-- Support for multiple package managers (npm, yarn, pnpm)
-- Support for various frontend frameworks
-- Customizable configuration
-
-## Development Tools
-
-### Asset Synchronization
-
-This template includes an asset synchronization system that automatically copies shared assets to each module's appropriate directory. This ensures consistency while maintaining the independence of each module.
-
-```bash
-# Sync all assets
-node scripts/sync-assets.js
-
-# Sync assets for specific modules
-node scripts/sync-assets.js --modules=module-a,module-b
-
-# Dry run (no actual changes)
-node scripts/sync-assets.js --dry-run
-```
-
-### Project Record Management
-
-The template integrates with Project Record Manager (PRM) to help document architecture decisions and implementation details in a consistent format.
-
-#### Setup
-
-```bash
-# Set up Project Record Manager
-node scripts/setup-prm.js
-```
-
-#### Usage
-
-```bash
-# Create a new record
-npm run prm:create
-# or with yarn
-yarn prm:create
-# or with pnpm
-pnpm prm:create
-
-# Configure settings
-npm run prm:config
-```
-
-This tool helps maintain comprehensive documentation of your project's development history, which is especially valuable in a modular architecture where design decisions should be well-documented.
-
-For detailed documentation, see [Project Record Manager for CMM](./documents/tools/project-record-manager_en.md).
-
-## Architecture
-
-The Containerized Modular Monolith Architecture is based on the following design principles:
-
-1. **Clear Module Boundaries**: Each module has clearly defined responsibilities and minimizes dependencies on other modules.
-2. **API First**: Communication between modules is only done through clearly defined APIs.
-3. **Independent Data Stores**: Each module has its own data store.
-4. **Unified Authentication & Authorization**: Authentication and authorization are managed centrally.
-5. **Gradual Scaling**: Modules can be scaled out individually based on traffic and development team size.
-
-Detailed architecture documentation is available in the `docs/` directory of each template.
+This framework provides a structured approach to building applications that can be containerized and deployed to various cloud environments. It combines the advantages of monolithic architecture (simplicity, development speed) with the benefits of microservices (modularity, scalability) while avoiding their drawbacks.
 
 ## Documentation
 
-- [Architecture Overview](./documents/architecture/overview.md)
-- [Template Comparison](./documents/architecture/cmm-template-comparison_en.md)
-- [Project Record Manager](./documents/tools/project-record-manager_en.md)
-- [Contributing Guidelines](./CONTRIBUTING.md)
+Detailed documentation is available in the `docs` directory:
 
-## Contributing
+- [English Documentation](./docs/en/index.md)
+- [Japanese Documentation](./docs/ja/index.md)
 
-Contributions are welcome! See [CONTRIBUTING_EN.md](./create-cmm-template/CONTRIBUTING_EN.md) for details.
+## Features
+
+- **Cloud-Agnostic Architecture**: Support for deployment to AWS, GCP/Firebase, Azure, and on-premises
+- **Multi-Package Manager Support**: Compatible with npm (default), yarn, and pnpm
+- **Monorepo Management**: Turborepo integration for efficient builds
+- **Multilingual Support**: Documentation and interfaces in English (default) and Japanese
+- **Asset Synchronization**: Built-in `msyn` tool for asset management across modules
+- **Modular Structure**: Separation of concerns through clearly defined module boundaries
+- **Containerization**: Docker-based development and deployment
+- **Infrastructure as Code**: Templates for each supported cloud provider
+
+## Directory Structure
+
+```
+framework/
+├── core/                         # Shared core functionality
+│   ├── api/                      # API definitions and interfaces
+│   ├── auth/                     # Authentication and authorization
+│   ├── communication/            # Inter-module communication
+│   └── utils/                    # Shared utilities
+├── frontend/                     # Modularized frontend
+│   ├── core/                     # Frontend core functionality
+│   │   ├── web/                  # Web app frontend
+│   │   │   ├── [framework-1]/    # e.g., React, Svelte, Vue, etc.
+│   │   │   ├── [framework-2]/    # Another framework implementation
+│   │   │   └── [framework-n]/    # Additional framework implementations
+│   │   └── mobile/               # Mobile app frontend
+│   │       ├── [framework-1]/    # e.g., React Native, Flutter, etc.
+│   │       └── [framework-2]/    # Another framework implementation
+│   └── modules/                  # Feature modules
+│       ├── registry.json         # Module registration information
+│       └── [module-name]/        # Each module
+│           ├── metadata.json     # Module metadata
+│           ├── web/              # Web module implementation
+│           │   ├── [framework-1]/# Selected web framework implementation
+│           │   ├── [framework-2]/# Another framework implementation (optional)
+│           │   └── [framework-n]/# Additional framework implementations (optional)
+│           └── mobile/           # Mobile module implementation
+│               ├── [framework-1]/# Selected mobile framework implementation
+│               └── [framework-2]/# Another framework implementation (optional)
+├── backend/                      # Modularized backend
+│   ├── api-gateway/              # API gateway
+│   ├── auth-service/             # Authentication service
+│   └── modules/                  # Backend modules
+├── assets/                       # Shared assets
+│   ├── images/                   # Original images
+│   ├── images-optimized/         # Optimized images
+│   ├── fonts/                    # Fonts
+│   └── icons/                    # Icons
+├── docs/                         # Documentation
+│   ├── api/                      # API specifications
+│   ├── architecture/             # Architecture design
+│   ├── diagrams/                 # Diagrams
+│   ├── guides/                   # Development guides
+│   ├── learning/                 # Learning resources
+│   └── templates/                # Templates
+├── scripts/                      # Development and deployment scripts
+│   └── msyn/                     # Module synchronization tool
+└── infrastructure/               # Infrastructure code
+    ├── aws/                      # AWS-specific configuration
+    ├── gcp/                      # GCP-specific configuration
+    ├── azure/                    # Azure-specific configuration
+    └── on-premise/               # On-premises configuration
+```
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 14 or higher
+- Docker and Docker Compose
+- Git
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/ancient0328/containerized-modular-monolith.git
+cd containerized-modular-monolith
+
+# Install dependencies with npm (default)
+npm install
+
+# Or, use yarn
+yarn
+
+# Or, use pnpm
+pnpm install
+```
+
+### Setup
+
+Run the setup wizard to configure your environment:
+
+```bash
+npm run setup
+```
+
+This wizard will guide you through:
+1. Selecting a cloud provider
+2. Choosing modules to include
+3. Configuring your development environment
+
+## Package Manager Support
+
+### npm (default)
+
+```bash
+# Install dependencies
+npm install
+
+# Run scripts
+npm run dev
+
+# Add dependencies
+npm install package-name
+```
+
+### Yarn
+
+```bash
+# Install dependencies
+yarn
+
+# Run scripts
+yarn dev
+
+# Add dependencies
+yarn add package-name
+```
+
+### pnpm
+
+```bash
+# Install dependencies
+pnpm install
+
+# Run scripts
+pnpm dev
+
+# Add dependencies
+pnpm add package-name
+```
+
+## Cloud Provider Support
+
+The framework anticipates configurations for multiple cloud providers:
+
+- **AWS**: CloudFormation templates and CDK configurations
+- **GCP/Firebase**: Terraform configurations and Firebase setup
+- **Azure**: ARM templates and Azure DevOps pipelines
+- **On-premises**: Docker Compose and Kubernetes configurations
+
+You can select your preferred provider during setup or configure it manually later.
+
+## Module Synchronization Tool (msyn)
+
+This framework includes a built-in asset synchronization tool called "msyn" for managing assets across modules. This tool automatically synchronizes resources such as images, fonts, and icons from the central `assets/` directory to the appropriate directories in each frontend implementation (React, Svelte, Vue, Flutter, etc.).
+
+### Key Features of msyn
+
+- **Asset Synchronization**: Sync assets from a common directory to each framework's recommended location
+- **Differential Sync**: Efficiently sync only files that have changed
+- **SVG Optimization**: React Native-compatible SVG optimization
+- **Watch Mode**: Detect file changes and sync automatically
+- **Interactive Configuration**: User-friendly configuration wizard
+- **Multilingual Interface**: Japanese and English interfaces
+
+### Recommended Paths by Framework
+
+msyn can accommodate recommended paths for common frameworks (examples):
+
+- **Svelte Kit**: `static/images/`
+- **Next.js**: `public/images/`
+- **React Native**: `src/assets/images/`
+- **Flutter**: `assets/images/`
+- **Angular**: `src/assets/images/`
+- **Vue.js**: `public/images/`
+
+These are common examples and can be customized to match your project structure.
+
+### Basic Usage of msyn
+
+```bash
+# Run the configuration wizard
+node scripts/msyn/bin/msyn.js config
+
+# Synchronize assets
+node scripts/msyn/bin/msyn.js sync
+
+# Verbose output
+node scripts/msyn/bin/msyn.js sync --verbose
+
+# Force overwrite
+node scripts/msyn/bin/msyn.js sync --force
+
+# Sync only specific modules
+node scripts/msyn/bin/msyn.js sync --modules=frontend/core/web/[framework-1],frontend/modules/[module-name]/web/[framework-2]
+
+# Watch for changes
+node scripts/msyn/bin/msyn.js watch
+
+# Optimize SVG files
+node scripts/msyn/bin/msyn.js optimize
+
+# Change language
+node scripts/msyn/bin/msyn.js lang ja  # Japanese
+node scripts/msyn/bin/msyn.js lang en  # English
+```
+
+### Configuration File
+
+Configuration is stored in `.msyn.json` at the project root. You can edit it manually if needed:
+
+```json
+{
+  "version": "1.0.0",
+  "language": "en",
+  "sourceDir": "assets/images",
+  "optimizedDir": "assets/images-optimized",
+  "modules": [
+    {
+      "name": "frontend/core/web/[framework-1]",
+      "targetDir": "public/images",
+      "enabled": true
+    },
+    {
+      "name": "frontend/modules/[module-name]/web/[framework-2]",
+      "targetDir": "static/images",
+      "enabled": true
+    },
+    {
+      "name": "frontend/core/mobile/[framework-3]",
+      "targetDir": "assets/images",
+      "enabled": true
+    }
+  ],
+  "options": {
+    "autoOptimize": true,
+    "watchDelay": 2000
+  }
+}
+```
+
+For detailed usage, refer to the [msyn documentation](./scripts/msyn/README.md).
+
+## Turborepo Integration
+
+The framework is integrated with Turborepo for efficient monorepo management:
+
+```bash
+# Run scripts in all workspaces
+npx turbo run dev
+
+# Run scripts in a specific framework implementation
+npx turbo run build --filter=frontend/core/web/[framework-1]
+
+# Run scripts in a specific module
+npx turbo run build --filter=frontend/modules/[module-name]/web/[framework-2]
+```
+
+## Development Workflow
+
+1. **Create a new module**: Use templates from the `templates/` directory
+2. **Local development**: Run with Docker Compose
+3. **Asset synchronization**: Use the msyn tool to sync shared assets to each framework implementation
+4. **Testing**: Run tests for individual modules or the entire application
+5. **Deployment**: Use cloud-specific deployment scripts
+
+## Multi-Framework Support
+
+This framework supports implementation across multiple frontend frameworks. Depending on your project requirements, you can choose from frameworks such as:
+
+- **Web**: React, Svelte, Vue, Angular, and other modern web frameworks
+- **Mobile**: React Native, Flutter, and other cross-platform frameworks
+
+Each module can provide implementations for each framework adopted in the project. The module metadata (`metadata.json`) describes the supported frameworks and their implementation paths.
+
+The application shell (dashboard) references the module registry (`registry.json`) to discover available modules and dynamically load the appropriate framework implementation. This allows users to seamlessly access modules implemented in different frameworks through a consistent interface.
+
+### Flexibility in Technology Selection
+
+This architecture is not dependent on any specific framework, allowing you to select the optimal technology based on your project requirements and team skill set. For example:
+
+- Use Svelte for performance-critical parts
+- Use React for complex UI components
+- Use Flutter for mobile apps
+
+You can choose the optimal framework for each module.
+
+### Implementation Strategies
+
+The following strategies are effective for development in a multi-framework environment:
+
+1. **Standardize inter-module communication**: Use standard communication protocols such as RESTful APIs or GraphQL
+2. **Define common interfaces**: Clearly define interfaces that each module should implement
+3. **Metadata-driven approach**: Describe module functionality and dependencies in metadata
+4. **Leverage micro-frontend techniques**: Use technologies such as Web Components or module federation
+5. **Common state management**: Provide mechanisms for sharing state across frameworks
+
+These strategies enable an integrated environment where modules implemented in different frameworks work together.
 
 ## License
 
 MIT
 
-## Author
-
-Kazuhiro Furukawa
+---

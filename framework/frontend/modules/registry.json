@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "modules": [
+    {
+      "id": "sample-module",
+      "name": "サンプルモジュール",
+      "description": "フレームワークのサンプルモジュール",
+      "path": "sample-module",
+      "implementations": {
+        "web": ["react", "svelte", "vue"],
+        "mobile": ["react-native", "flutter"]
+      },
+      "version": "0.1.0",
+      "dependencies": [],
+      "enabled": true
+    }
+  ]
+}
