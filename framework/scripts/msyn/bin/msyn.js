@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * msyn - Module synchronization tool for Containerized Modular Monolith architecture
+ * msyn - Module synchronization tool for Framework-Agnostic Modular Architecture (FAMA)
  * 
  * A comprehensive asset management and synchronization tool
  * for multi-framework, modular monolith projects

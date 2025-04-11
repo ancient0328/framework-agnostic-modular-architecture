@@ -1,7 +1,7 @@
 {
   "name": "msyn",
   "version": "1.0.0",
-  "description": "Module synchronization tool for Containerized Modular Monolith architecture",
+  "description": "Module synchronization tool for Framework-Agnostic Modular Architecture (FAMA)",
   "main": "lib/index.js",
   "bin": {
     "msyn": "bin/msyn.js"

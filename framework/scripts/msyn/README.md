@@ -1,6 +1,6 @@
 # msyn - Module Synchronization Tool
 
-A comprehensive asset management and synchronization tool for Containerized Modular Monolith architecture. Efficiently manage assets across multiple frameworks and modules.
+A comprehensive asset management and synchronization tool for Framework-Agnostic Modular Architecture (FAMA). Efficiently manage assets across multiple frameworks and modules.
 
 ## Features
 
