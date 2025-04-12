@@ -61,3 +61,4 @@ framework/assets/images-optimized/
 
 # Other dot directories that might contain sensitive information
 .history/
+.github
