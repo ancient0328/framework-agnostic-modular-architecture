@@ -1,168 +1,191 @@
-# Asset Synchronization Tool (msyn)
+# msyn - Multi-Framework Asset Synchronization Tool
 
-## Overview
-
-The `msyn` tool is designed to efficiently manage and synchronize assets across different frontend framework implementations in the Containerized Modular Monolith Framework. It ensures that images, fonts, icons, and other resources are consistently available across all frontend modules.
+A comprehensive asset management and synchronization tool for multi-framework projects. Efficiently manage and optimize assets across web, mobile, and native applications.
 
 ## Features
 
-- **Differential Synchronization**: Only synchronizes files that have changed
-- **SVG Optimization**: Automatically optimizes SVG files during synchronization
-- **Watch Mode**: Monitors for changes and synchronizes in real-time
-- **Interactive Configuration**: Easy setup through interactive prompts
-- **Multi-language Support**: Supports internationalization of assets
-- **Framework-specific Paths**: Automatically maps assets to the correct paths for each framework
+- **Automatic Framework Detection**: Automatically detects frameworks in your project
+- **Multiple Asset Types**: Supports images, icons, fonts, and custom asset types
+- **Asset Synchronization**: Syncs assets from common directories to framework-specific locations
+- **SVG Optimization**: Optimizes SVGs for better compatibility and performance
+- **Watch Mode**: Automatically detects and syncs file changes
+- **Interactive Configuration**: User-friendly setup wizard with smart defaults
+- **Multi-language Support**: English and Japanese interfaces
 
 ## Installation
 
-The `msyn` tool is included with the Containerized Modular Monolith Framework. No additional installation is required.
-
-## Configuration
-
-### Configuration File
-
-The tool uses a `.msyn.json` configuration file in the project root. Here's an example configuration:
-
-```json
-{
-  "sourceDir": "assets",
-  "targets": [
-    {
-      "name": "react-app",
-      "path": "modules/frontend/react-app/public/assets",
-      "frameworks": ["react"]
-    },
-    {
-      "name": "svelte-app",
-      "path": "modules/frontend/svelte-app/static/assets",
-      "frameworks": ["svelte"]
-    },
-    {
-      "name": "vue-app",
-      "path": "modules/frontend/vue-app/public/assets",
-      "frameworks": ["vue"]
-    },
-    {
-      "name": "flutter-app",
-      "path": "modules/frontend/flutter-app/assets",
-      "frameworks": ["flutter"]
-    }
-  ],
-  "options": {
-    "optimizeSvg": true,
-    "watchMode": false,
-    "verbose": true
-  }
-}
-```
-
-### Creating a Configuration
-
-To create a new configuration file, run:
-
 ```bash
-npx msyn init
-```
+# Global installation with npm
+npm install -g msyn
 
-This will guide you through an interactive setup process.
+# Or, install as a project dependency
+npm install --save-dev msyn
+
+# With pnpm
+pnpm install --save-dev msyn
+```
 
 ## Usage
 
-### Basic Synchronization
+### Initial Setup
 
-To synchronize assets to all target frameworks:
+When using for the first time, run the configuration wizard:
 
 ```bash
+npx msyn config
+```
+
+This interactive wizard will guide you through:
+- Setting up asset directories (images, icons, fonts)
+- Detecting and configuring frameworks
+- Setting watch mode parameters
+
+### Asset Synchronization
+
+```bash
+# Basic synchronization
 npx msyn sync
+
+# Detailed output
+npx msyn sync --verbose
+
+# Force overwrite
+npx msyn sync --force
 ```
 
 ### Watch Mode
 
-To continuously monitor for changes and synchronize automatically:
-
 ```bash
+# Start watch mode
 npx msyn watch
+
+# With detailed output
+npx msyn watch --verbose
 ```
 
-### Selective Synchronization
+## Configuration
 
-To synchronize assets to specific targets:
+### Asset Directory Structure
 
-```bash
-npx msyn sync --targets react-app,vue-app
+msyn v1.1.0 uses a standardized asset directory structure:
+
+```
+assets/
+  ├── images/
+  │   └── .optimized/  (automatically created)
+  ├── icons/
+  │   └── .optimized/  (automatically created)
+  └── fonts/
 ```
 
-### Synchronizing Specific Files
+These directories are automatically created during configuration and used for synchronization. Optimization directories are created for image assets only.
 
-To synchronize only specific files or directories:
+### Framework Detection
 
-```bash
-npx msyn sync --files images/logo.png,fonts
-```
+msyn automatically detects frameworks in your project by analyzing:
+- Package dependencies
+- Configuration files
+- Directory structures
 
-## Framework-specific Paths
+Supported frameworks include:
 
-The tool automatically maps assets to the correct paths for each framework:
+**Web Frameworks**:
+- Next.js
+- React
+- Remix
+- Vue
+- Nuxt.js
+- Angular
+- Svelte
+- SvelteKit
+- SolidJS
+- Astro
 
-- **React/Next.js**: `public/assets`
-- **Svelte Kit**: `static/assets`
-- **Vue.js**: `public/assets`
-- **Flutter**: `assets`
-- **React Native**: `assets`
+**Mobile Frameworks**:
+- React Native
+- Expo
+- Flutter
+- Ionic
+- Capacitor
 
-These paths can be customized in the configuration file.
+**Native Frameworks**:
+- Swift (iOS)
+- Kotlin (Android)
+- Xamarin
 
-## Best Practices
+### Default Asset Paths
 
-- **Organize Assets Logically**: Group assets by type (images, fonts, icons)
-- **Use Consistent Naming**: Adopt a consistent naming convention
-- **Optimize Before Sync**: Pre-optimize large assets before adding them
-- **Regular Synchronization**: Run synchronization regularly during development
-- **Version Control**: Include the configuration file in version control
+msyn uses these recommended paths for various frameworks:
 
-## Troubleshooting
+- **Next.js/React/Remix**: `public/images/`, `public/icons/`, `public/fonts/`
+- **SvelteKit**: `static/images/`, `static/icons/`, `static/fonts/`
+- **Angular**: `src/assets/images/`, `src/assets/icons/`, `src/assets/fonts/`
+- **React Native**: `src/assets/images/`, `src/assets/icons/`, `src/assets/fonts/`
+- **Flutter**: `assets/images/`, `assets/icons/`, `assets/fonts/`
+- **Swift**: `Resources/Images/`, `Resources/Icons/`, `Resources/Fonts/`
+- **Kotlin**: `res/drawable/`, `res/drawable/`, `res/font/`
 
-### Common Issues
+### Configuration File
 
-#### Files Not Synchronizing
-
-If files aren't synchronizing:
-1. Check file permissions
-2. Verify the paths in the configuration file
-3. Ensure the source files exist
-
-#### Performance Issues
-
-If synchronization is slow:
-1. Reduce the number of assets
-2. Disable SVG optimization for development
-3. Use selective synchronization
-
-## Advanced Configuration
-
-### Custom Transformations
-
-You can add custom transformations to process assets during synchronization:
+Configuration is stored in `.msyn.json` in your project root. Example:
 
 ```json
 {
-  "transformations": [
-    {
-      "pattern": "*.jpg",
-      "command": "imagemin --quality=80"
+  "version": "1.1.0",
+  "language": "en",
+  "assets": {
+    "images": {
+      "source": "assets/images/",
+      "optimized": "assets/images/.optimized/"
+    },
+    "icons": {
+      "source": "assets/icons/",
+      "optimized": "assets/icons/.optimized/"
+    },
+    "fonts": {
+      "source": "assets/fonts/",
+      "optimized": null
     }
-  ]
+  },
+  "targets": [
+    {
+      "framework": "nextjs",
+      "type": "web",
+      "destination": "/path/to/nextjs/public/images",
+      "formats": ["webp", "jpg", "png", "svg"],
+      "assetType": "images"
+    },
+    {
+      "framework": "reactnative",
+      "type": "mobile",
+      "destination": "/path/to/reactnative/src/assets/images",
+      "formats": ["png", "jpg", "webp"],
+      "assetType": "images"
+    }
+  ],
+  "watch": true,
+  "optimize": true,
+  "watchDelay": 2000
 }
 ```
 
-### Environment-specific Configurations
+## Environment Variables
 
-You can create environment-specific configurations:
+- `MSYN_LANG`: Set language (en/ja)
 
-```bash
-npx msyn sync --config .msyn.dev.json
-```
+## Dependencies
 
-## Contributing
+- Node.js 14 or higher
+- chokidar (file watching)
+- svgo (SVG optimization)
+- inquirer (interactive interface)
+- commander (command line parsing)
+- glob (file pattern matching)
 
-Contributions to improve the `msyn` tool are welcome. Please see the [Contributing Guide](./contributing.md) for more information.
+## License
+
+MIT
+
+---
+
+[日本語版のREADMEはこちら](./README.ja.md)

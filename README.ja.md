@@ -188,182 +188,54 @@ npx msyn lang en  # 英語
 
 ### 前提条件
 
-- Node.js 14以上
-- DockerとDocker Compose
+- Node.js（v14以降）
+- npm、yarn、またはpnpm
 - Git
 
 ### インストール
 
-```bash
-# リポジトリのクローン
-git clone https://github.com/ancient0328/containerized-modular-monolith.git
-cd containerized-modular-monolith
-
-# npm（デフォルト）で依存関係をインストール
-npm install
-
-# または、yarnを使用
-yarn
-
-# または、pnpmを使用
-pnpm install
-```
-
-### セットアップ
-
-セットアップウィザードを実行して環境を設定します：
+以下のシンプルなシェルスクリプトを使用して、完全なディレクトリ構造を持つ新しいプロジェクトを作成できます：
 
 ```bash
-npm run setup
+# リポジトリをクローン
+git clone https://github.com/ancient0328/framework-agnostic-modular-architecture.git
+
+# 新しいプロジェクトを作成（'my-project'をプロジェクト名に置き換えてください）
+./framework-agnostic-modular-architecture/create-structure.sh my-project
+
+# 新しいプロジェクトに移動
+cd my-project
 ```
 
-このウィザードでは以下の設定を行います：
-1. クラウドプロバイダーの選択
-2. 含めるモジュールの選択
-3. 開発環境の設定
+このスクリプトは、必要なすべてのディレクトリと各セクションの基本的なREADMEファイル、基本的なpackage.jsonと.msyn.json設定を作成します。
 
-## パッケージマネージャーサポート
-
-### npm（デフォルト）
+プロジェクト構造を作成した後、アセット同期のためにmsynのインストールを推奨します：
 
 ```bash
-# 依存関係のインストール
-npm install
+# npmを使用
+npm install msyn --save-dev
 
-# スクリプトの実行
-npm run dev
+# yarnを使用
+yarn add msyn --dev
 
-# 依存関係の追加
-npm install package-name
+# pnpmを使用
+pnpm add msyn --save-dev
 ```
 
-### Yarn
+または、ディレクトリ構造を手動で作成することもできます：
 
 ```bash
-# 依存関係のインストール
-yarn
-
-# スクリプトの実行
-yarn dev
-
-# 依存関係の追加
-yarn add package-name
+# プロジェクトディレクトリの作成
+mkdir -p my-project/framework/assets/{fonts,icons,images,images-optimized}
+mkdir -p my-project/framework/backend/{api-gateway,auth-service,modules}
+mkdir -p my-project/framework/core/{api,auth,communication,utils}
+mkdir -p my-project/framework/docs/{api,architecture,diagrams,guides,learning,templates}
+mkdir -p my-project/framework/frontend/core/{web,mobile}
+mkdir -p my-project/framework/frontend/modules
+mkdir -p my-project/framework/infrastructure/{aws,azure,gcp,on-premise}
+mkdir -p my-project/framework/scripts
 ```
 
-### pnpm
+### パッケージマネージャー
 
-```bash
-# 依存関係のインストール
-pnpm install
-
-# スクリプトの実行
-pnpm dev
-
-# 依存関係の追加
-pnpm add package-name
-```
-
-## クラウドプロバイダーサポート
-
-フレームワークは複数のクラウドプロバイダーの設定を想定しています：
-
-- **AWS**: CloudFormationテンプレートとCDK設定
-- **GCP/Firebase**: Terraform設定とFirebaseセットアップ
-- **Azure**: ARMテンプレートとAzure DevOpsパイプライン
-- **オンプレミス**: Docker ComposeとKubernetes設定
-
-セットアップ時に希望のプロバイダーを選択するか、後で手動で設定することができます。
-
-## Turborepo統合
-
-フレームワークは効率的なモノレポ管理のためにTurborepoと統合されています：
-
-```bash
-# すべてのワークスペースでスクリプトを実行
-npx turbo run dev
-
-# 特定のフレームワーク実装でスクリプトを実行
-npx turbo run build --filter=frontend/core/web/[framework-1]
-
-# 特定のモジュールでスクリプトを実行
-npx turbo run build --filter=frontend/modules/[module-name]/web/[framework-2]
-```
-
-## 開発ワークフロー
-
-1. **新しいモジュールの作成**: `templates/`ディレクトリからテンプレートを使用
-2. **ローカル開発**: Docker Composeで実行
-3. **アセットの同期**: msynツールを使用して共有アセットを各フレームワーク実装に同期
-4. **テスト**: 個々のモジュールまたはアプリケーション全体のテストを実行
-5. **デプロイ**: クラウド固有のデプロイメントスクリプトを使用
-
-## マルチフレームワーク対応
-
-このフレームワークは、複数のフロントエンドフレームワークでの実装をサポートしています。プロジェクトの要件に応じて、以下のようなフレームワークから選択できます：
-
-- **Web**: React、Svelte、Vue、Angular、その他のモダンWebフレームワーク
-- **モバイル**: React Native、Flutter、その他のクロスプラットフォームフレームワーク
-
-各モジュールは、プロジェクトで採用するフレームワークごとに実装を提供できます。モジュールのメタデータ（`metadata.json`）には、対応するフレームワークとその実装パスが記述されます。
-
-アプリケーションシェル（ダッシュボード）は、モジュールレジストリ（`registry.json`）を参照して利用可能なモジュールを検出し、適切なフレームワーク実装を動的に読み込みます。これにより、ユーザーは一貫したインターフェースを通じて、異なるフレームワークで実装されたモジュールにシームレスにアクセスできます。
-
-### フレームワーク選択の自由
-
-このアーキテクチャは、特定のフレームワークに縛られない柔軟性を提供します。例えば：
-
-- WebはSvelteKit、モバイルはCapacitor
-- WebはNext.js、モバイルはFlutter
-- WebはNuxt.js、モバイルはSwift/Kotlin
-
-など、プロジェクトやチームのニーズに最適な組み合わせを自由に選択できます。さらに、モジュールごとに異なるフレームワークを採用することも可能です。
-
-重要なのは「対応可能性」であり、「すべてを同時に実装する必要がある」ということではありません。
-
-### 技術選定の柔軟性
-
-このアーキテクチャは特定のフレームワークに依存せず、プロジェクトの要件やチームのスキルセットに応じて最適な技術を選択できます。例えば：
-
-- パフォーマンスが重視される部分にはSvelteを使用
-- 複雑なUIコンポーネントにはReactを使用
-- モバイルアプリにはFlutterを使用
-
-など、モジュールごとに最適なフレームワークを選択することが可能です。
-
-### 実装戦略
-
-マルチフレームワーク環境での開発には、以下の戦略が有効です：
-
-1. **モジュール間通信の標準化**: RESTful APIやGraphQLなど標準的な通信プロトコルを使用
-2. **共通インターフェースの定義**: 各モジュールが実装すべきインターフェースを明確に定義
-3. **メタデータ駆動アプローチ**: モジュールの機能や依存関係をメタデータで記述
-4. **マイクロフロントエンド手法の活用**: WebComponentsやモジュールフェデレーションなどの技術を使用
-5. **共通状態管理**: フレームワーク間で状態を共有するための仕組みを提供
-
-これらの戦略により、異なるフレームワークで実装されたモジュールが連携して動作する統合環境を実現できます。
-
-## 統合ポイント
-
-異なるフレームワーク間の統合は、以下の方法で実現されます：
-
-1. **共通APIインターフェース**: 標準化されたAPI契約によるコミュニケーション
-2. **イベントバス**: フレームワークを超えたイベント伝播
-3. **アセット同期ツール**: `msyn`のような実装間でアセットを共有するためのツール
-4. **共有設定**: 一貫した動作のための共通設定
-
-このアプローチにより、アプリケーションの各部分に最も適切な技術を使用しながら、システム全体の一貫性を維持することができます。
-
-## ビジネス価値
-
-この柔軟性は、各機能に最適な技術を選択できるだけでなく、以下のことも可能にします：
-
-- 市場の変化や新技術の登場に迅速に対応
-- チームの異なるフレームワークに関する専門知識を活用
-- レガシーシステムからの段階的な移行
-- 特殊なフレームワークを必要な場所で使用してパフォーマンスを最適化
-
-## ライセンス
-
-MIT
-
----
+{{ ... }}
