@@ -205,7 +205,7 @@ git clone https://github.com/ancient0328/framework-agnostic-modular-architecture
 cd my-project
 ```
 
-The script will create all necessary directories and basic README files for each section, along with a basic package.json and .msyn.json configuration.
+The script will create all necessary directories and basic README files for each section, along with a basic package.json configuration.
 
 After creating your project structure, we recommend installing msyn for asset synchronization:
 

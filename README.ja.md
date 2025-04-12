@@ -207,7 +207,7 @@ git clone https://github.com/ancient0328/framework-agnostic-modular-architecture
 cd my-project
 ```
 
-このスクリプトは、必要なすべてのディレクトリと各セクションの基本的なREADMEファイル、基本的なpackage.jsonと.msyn.json設定を作成します。
+このスクリプトは、必要なすべてのディレクトリと各セクションの基本的なREADMEファイル、基本的なpackage.json設定を作成します。
 
 プロジェクト構造を作成した後、アセット同期のためにmsynのインストールを推奨します：
 
